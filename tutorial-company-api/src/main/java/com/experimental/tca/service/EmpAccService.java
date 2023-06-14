@@ -3,16 +3,15 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.mapper.AuditLogMapper;
+import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.model.*;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.experimental.tca.data.Request;
 import com.experimental.tca.data.Response;
-import com.experimental.tca.repository.AuditLogRepository;
-import com.experimental.tca.repository.EmpAccRepository;
 import com.experimental.tca.util.Verification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,13 +23,12 @@ import lombok.RequiredArgsConstructor;
 public class EmpAccService {
 
 	@Autowired
-	private final EmpAccRepository empAccRepository;
-
-	@Autowired
-	private final AuditLogRepository auditLogRepository;
-
+	private AuditLogMapper auditLogMapper;
 	@Autowired
 	private EntityManager entityManager;
+
+	@Autowired
+	private final EmpAccMapper empAccMapper;
 
 	private final JwtService jwtService;
 
@@ -38,40 +36,36 @@ public class EmpAccService {
 
 	private final ObjectMapper oMap = new ObjectMapper();
 
-	private final ArrayList<String> sqlReturn = new ArrayList<>();
+	@Autowired
+	private final Verification verification;
 
-	private final ArrayList<String> removeKeyList = new ArrayList<>();
+	public Response registerEmployee(Request<EmpAcc> request) {
 
-	private final Verification verification = new Verification();
-
-	@SuppressWarnings("unchecked")
-	private List<EmpAcc> processEmpAcc(List<EmpAcc> empAcc) {
-
-
-		return responseObj;
-	}
-
-	public Response register_employee(Request<EmpAcc> request) {
-
-		String infoId = "";
+		String infoId = "0";
 		String infoMsg = "";
-		EmpAcc empAcc;
+		EmpAcc empAcc = new EmpAcc();
+		AuditLog auditLog = new AuditLog();
 
-		if (null == verification.verify_employee(request, empAccRepository.findAll(), "register_employee")) {
+		if (null == verification.verifyEmployee(request, empAccMapper.findAll(), "register_employee")) {
 
 			empAcc = request.getData();
 
-			infoId = entityManager.createNamedStoredProcedureQuery("api_create_emp_acc")
-						 .setParameter("emp_id", empAcc.getId())
-						 .setParameter("uname",empAcc.getUsername())
-						 .setParameter("pword", passwordEncoder.encode(empAcc.getPassword()))
-						 .setParameter("action_timestamp", new Timestamp(new Date().getTime()))
-						 .getResultList().get(0).toString();
+			try {
+				empAccMapper.save(empAcc);
+			}catch (Exception e){
+				e.printStackTrace();
+				infoId = "1";
+			}
 
 		}
+		if ("0".equals(infoId)) {
+			infoMsg = "Employee " + empAcc.getUsername() + " created.";
 
-		if (1 < sqlReturn.size()) infoMsg = sqlReturn.get(1);
-		if ("0".equals(infoId)) infoMsg = "Employee created.";
+			auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
+			auditLog.setVc_audit_descript(infoMsg);
+			auditLog.setI_emp_id(request.getData().getId());
+
+		}
 
 
 		return Response.builder()
@@ -80,13 +74,13 @@ public class EmpAccService {
 				.build();
 	}
 
-    public Response view_all_employee(Request<EmpAcc> request) {
+    public Response viewAllEmployee(Request<EmpAcc> request) {
+
+		List<EmpAcc> empAccs = empAccMapper.findAll();
 
         String infoId = "";
-        String infoMsg = "";
-		List<EmpAcc> empAccs;
-		empAccs =  empAccRepository.findAll();
-		infoMsg = verification.verify_employee(request, empAccs, "elevated_employee_action");
+        String infoMsg = verification.verifyEmployee(request, empAccs, "elevated_employee_action");
+
         if (null == infoMsg) {
 			infoId = "0";
 			infoMsg = "SUCCESS";
@@ -96,6 +90,8 @@ public class EmpAccService {
 			empAccs = null;
 		}
 
+		System.out.println("["+ new Timestamp(new Date().getTime()) + "] Employee "+ empAccMapper.findById(request.getData().getId()) );
+
 		return Response.builder()
 				.infoId(infoId)
 				.infoMsg(infoMsg)
@@ -103,42 +99,37 @@ public class EmpAccService {
 				.build();
     }
 
-	public Response revoke_employee(Request<EmpAcc> request) {
+	public Response revokeEmployee(Request<EmpAcc> request) {
 
 		String infoId = "";
 		String infoMsg = "";
 
 		AuditLog auditLog;
 
-		List<EmpAcc> empAccs;
 		EmpAcc empAcc;
 
-		empAccs = empAccRepository.findAll();
-
-		if (null == verification.verify_employee(request, empAccs, "revoke_employee")) {
+		if (null == verification.verifyEmployee(request, empAccMapper.findAll(), "revoke_employee")) {
 
 			try {
 
-				empAcc = empAccs.stream().filter(emp -> emp.getUsername()
-										 .equals(request.getData()
-										 .getUsername()))
-									     .findFirst()
-										 .get();
+				empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(new EmpAcc());
+
 				empAcc.setStatus(0);
 
-				empAccRepository.save(empAcc);
+				empAccMapper.updateStatusIdById(empAcc);
 
+				infoId = "0";
+				infoMsg = "Employee " + request.getData().getUsername() + " was deactivated.";
 
 				auditLog = new AuditLog();
 
 				auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
-				auditLog.setVc_audit_descript(request.getData().getUsername() + " was deactivated.");
+				auditLog.setVc_audit_descript(infoMsg);
 				auditLog.setI_emp_id(request.getData().getId());
 
-				auditLogRepository.save(auditLog);
+				auditLogMapper.save(auditLog);
 
-				infoId = "0";
-				infoMsg = request.getData().getUsername() + " was deactivated.";
+				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
 
 			}catch(Exception e) {
 

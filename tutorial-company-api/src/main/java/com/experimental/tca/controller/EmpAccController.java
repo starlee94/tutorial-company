@@ -10,7 +10,7 @@ import com.experimental.tca.data.Response;
 import com.experimental.tca.service.EmpAccService;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/emp")
 public class EmpAccController{
 	
 	@Autowired
@@ -18,15 +18,15 @@ public class EmpAccController{
 	
 	@PostMapping("/createEmpAcc")
 	public ResponseEntity<Response> createEmpAcc(@RequestBody Request<EmpAcc> request) {
-		return ResponseEntity.ok(empAccService.register_employee(request));
+		return ResponseEntity.ok(empAccService.registerEmployee(request));
 	}
 
 	@GetMapping("/getAllEmpAcc")
-	public ResponseEntity<Response> getAllEmpAcc(@RequestBody Request<EmpAcc> request) { return  ResponseEntity.ok(empAccService.view_all_employee(request)); }
+	public ResponseEntity<Response> getAllEmpAcc(@RequestBody Request<EmpAcc> request) { return  ResponseEntity.ok(empAccService.viewAllEmployee(request)); }
 	
 	@PutMapping("/revokeEmpAcc")
 	public ResponseEntity<Response> deleteEmpAcc(@RequestBody Request<EmpAcc> request) {
-		return ResponseEntity.ok(empAccService.revoke_employee(request));		
+		return ResponseEntity.ok(empAccService.revokeEmployee(request));
 	}
 	
 }

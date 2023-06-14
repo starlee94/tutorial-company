@@ -3,6 +3,9 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.mapper.AuditLogMapper;
+import com.experimental.tca.mapper.EmpAccMapper;
+import com.experimental.tca.mapper.TokenMapper;
 import com.experimental.tca.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,74 +14,42 @@ import org.springframework.stereotype.Service;
 
 import com.experimental.tca.data.Request;
 import com.experimental.tca.data.Response;
-import com.experimental.tca.repository.AuditLogRepository;
-import com.experimental.tca.repository.EmpAccRepository;
-import com.experimental.tca.repository.TokenRepository;
 import com.experimental.tca.util.Verification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-	
+
 	@Autowired
-	private final EmpAccRepository empAccRepository;
-	
+	private final EmpAccMapper empAccMapper;
+
 	@Autowired
-	private final AuditLogRepository auditLogRepository;
-	
+	private final AuditLogMapper auditLogMapper;
+
 	@Autowired
-	private final TokenRepository tokenRepository;
+	private final TokenMapper tokenMapper;
 	
 	private final AuthenticationManager authenticationManager;
 	
 	private final JwtService jwtService;
 
-	private Verification verification = new Verification();
+	@Autowired
+	private final Verification verification;
+	public Response employeeLogin(Request<EmpAcc> request) {
 
-	private ObjectMapper oMap = new ObjectMapper();
-	
-	private ArrayList<String> removeKeyList = new ArrayList<>();
-
-//	private Map<String, Object> processResponse(EmpAcc empAcc, RmAccess rmAccess) {
-//
-//		data = new ResponseData(info.getInfoId(), info.getInfoMsg(), new Data(empAcc, rmAccess));
-//		data.getData().getEmpAcc().setRole(Role.USER);
-//
-//		Map<String, Object> responseObj = oMap.convertValue(data, Map.class);
-//
-//		((Map<String, Object>)responseObj.get("data")).entrySet().forEach(entry -> removeKeyList.add(entry.getKey()));
-//
-//		removeKeyList.removeIf(item -> item.equals("username"));
-//
-//		((Map<String, Object>)responseObj.get("data")).entrySet().removeIf(entry -> removeKeyList.contains(entry.getKey()));
-//
-//		return responseObj;
-//	}
-	
-	public Response employee_login(Request<EmpAcc> request) {
-
-		System.out.println(request);
-		String infoId = "";
-		String infoMsg;
-
-		List<EmpAcc> empAccs;
 		EmpAcc empAcc;
-		AuditLog auditLog;
+		AuditLog auditLog = new AuditLog();
 
-		auditLog = new AuditLog();
+		Response response;
 
-		empAccs = empAccRepository.findAll();
-		infoMsg = verification.verify_employee(request, empAccs, "employee_login");
-		if(null == infoMsg) {
-			infoMsg = "SUCCESS";
-		}
+		String infoId = "";
+		String infoMsg = verification.verifyEmployee(request, empAccMapper.findAll(), "employee_login");
 
-		Response response = null;
-		
 		try {
+
+
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
 							request.getData().getUsername(),
@@ -86,34 +57,40 @@ public class AuthenticationService {
 					);
 
 			infoId = "0";
+			empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(new EmpAcc());
+			String token = jwtService.generateToken(new HashMap<>(), request.getData().getUsername());
 
-			auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
-			auditLog.setVc_audit_descript(request.getData().getUsername() + " logged in.");
-			auditLog.setI_emp_id(empAccs.stream().filter(emp -> emp.getUsername().equals((request.getData()
-																	   		  				.getUsername())))
-																			  				.findFirst().get()
-																			  				.getId());
+			if (!tokenMapper.findByToken(token).isPresent()){
 
-			auditLogRepository.save(auditLog);
+				auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
+				auditLog.setVc_audit_descript("Employee " + request.getData().getUsername() + " logged in.");
+				auditLog.setI_emp_id(empAcc.getId());
 
-			System.out.println("[" + auditLog.getDt_timestamp() + "] Employee: "
-							   + request.getData().getUsername() + " logged in." );
+				auditLogMapper.save(auditLog);
+				infoMsg = "Employee " + request.getData().getUsername() + " logged in.";
 
-			response = Response.builder()
+				response = Response.builder()
 						.infoId(infoId)
 						.infoMsg(infoMsg)
-						.data(jwtService.generateToken(new HashMap<>(), request.getData().getUsername()))
-					   	.build();
+						.data(token)
+						.build();
 
-			empAcc = empAccs.stream().filter(emp -> emp.getUsername()
-					 						  .equals(request.getData()
-					 						  .getUsername()))
-							  				  .findFirst()
-							  				  .get();
+				revokeAllUserTokens(empAcc);
+				saveUserToken(empAcc, response.getData().toString());
 
-			revokeAllUserTokens(empAcc);
+				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
+			}else {
+				infoMsg = "Employee " + request.getData().getUsername() + " already logged in.";
 
-			saveUserToken(empAcc, response.getData().toString());
+				response = Response.builder()
+						.infoId(infoId)
+						.infoMsg(infoMsg)
+						.data(token)
+						.build();
+
+				System.out.println(infoMsg);
+			}
+
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -122,23 +99,21 @@ public class AuthenticationService {
 			response = Response.builder()
 						.infoId(infoId)
 						.infoMsg(infoMsg)
-						.data(jwtService.generateToken(new HashMap<>(), ""))
 						.build();
 		}
 		
 		
 		return response;
-		
+
 	}
 	
 	private void revokeAllUserTokens(EmpAcc empAcc) {
-		List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(empAcc.getId());
-		if(validUserTokens.isEmpty()) return;
-		
-		validUserTokens.forEach(t -> {
-			t.setRevoked(true);
-		});
-		tokenRepository.saveAll(validUserTokens);
+		List<Token> validUserTokens = tokenMapper.findAllValidTokenByUser(empAcc.getId());
+		if(validUserTokens.isEmpty()) {
+			return;
+		}
+
+		tokenMapper.revokeAll();
 	}
 	
 	private void saveUserToken(EmpAcc savedAcc, String jwtToken) {
@@ -149,7 +124,7 @@ public class AuthenticationService {
 				   		 .revoked(false)
 				   		 .build();
 		
-		tokenRepository.save(token);
+		tokenMapper.save(token);
 	}
 	
 }

@@ -1,37 +1,37 @@
 package com.experimental.tca.util;
 
 import java.util.List;
-import java.util.NoSuchElementException;
-
 import com.experimental.tca.data.Request;
+import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.model.EmpAcc;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
+@RequiredArgsConstructor
 public class Verification {
 
+	@Autowired
+	private final EmpAccMapper empAccMapper;
+
+	private String[] errorMsgConstant = {"Employee not found."};
 
 	private String employerAction(Request<? extends EmpAcc> request, List<EmpAcc> empAccs) {
 
-		EmpAcc empAcc;
+		EmpAcc empAcc = empAccMapper.findById(request.getData().getId());
 		//1. Check if the employer exist
-		try {
+		if (empAcc == null){
+			return errorMsgConstant[0];
+		}
 
-			empAcc = empAccs.stream()
-					.filter(emp -> emp.getId() == request.getData().getId())
-					.findFirst().get();
-
-		}catch (NoSuchElementException e) {
-			return "Employer not found.";
-		}			
-
-		//2. Check if the employer have permission
-		if(empAcc.getTagId() == null ||
-				(empAcc.getTagId() != 1 &&
-				empAcc.getTagId() != 2)) return "Employer does not have permission.";
+		if(empAcc.getTagId() == null || (empAcc.getTagId() != 1 && empAcc.getTagId() != 2))
+		{return "Employer does not have permission.";}
 
 		return null;
 	}
 
-	public String verify_employee(Request<EmpAcc> request, List<EmpAcc> empAccs, String option) {
+	public String verifyEmployee(Request<EmpAcc> request, List<EmpAcc> empAccs, String option) {
 
 		EmpAcc empAcc;
 		String errorMsg = null;
@@ -53,54 +53,39 @@ public class Verification {
 			errorMsg = employerAction(request, empAccs);
 
 			//2. Check if the new employee exists in database
-			empAcc = null;
-			try {
+			if(errorMsg == null){
+					empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
+					if(empAcc != null) {errorMsg = "Employee exist in database.";}
+				}
 
-				empAcc = empAccs.stream()
-						.filter(emp -> emp.getUsername().equals(request.getData().getUsername()))
-						.findFirst().get();
-
-			}catch (NoSuchElementException e) {
-				errorMsg = null;
-			}
-
-			if(empAcc != null) errorMsg = "Employee exist in database.";
 			break;
 
-		case "revoke_employee":
+			case "revoke_employee":
 
-			//Employer who plan to revoke employee account
-			//1. Pass employerAction method
-			errorMsg = employerAction(request, empAccs);
+				//Employer who plan to revoke employee account
+				//1. Pass employerAction method
+				errorMsg = employerAction(request, empAccs);
 
-			//2. Check if employee exist in database
-			empAcc = null;
-			try {
+				//2. Check if employee exist in database
+				if(errorMsg == null){
+					empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
+					if(empAcc == null) {errorMsg = errorMsgConstant[0];}
+				}
+				break;
 
-				empAcc = empAccs.stream()
-						.filter(emp -> emp.getUsername().equals(request.getData().getUsername()))
-						.findFirst().get();
+			case "employee_login":
 
-			}catch (NoSuchElementException e) {
-				errorMsg = "Employee not found.";
-			}
-			break;
-			
-		case "employee_login":
-			
-			//Employee attempt to login
-			//1. Check if employee exist in database
-			empAcc = null;
-			try {
+				//Employee attempt to login
+				//1. Check if employee exist in database
+				empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
 
-				empAcc = empAccs.stream()
-						.filter(emp -> emp.getUsername().equals(request.getData().getUsername()))
-						.findFirst().get();
+				if(empAcc == null){ errorMsg = errorMsgConstant[0];}
 
-			}catch (NoSuchElementException e) {
-				errorMsg = "Employee not found.";
-			}			
-			break;
+				break;
+
+			default:
+				errorMsg = "unexpected error occurred";
+				break;
 
 		}
 

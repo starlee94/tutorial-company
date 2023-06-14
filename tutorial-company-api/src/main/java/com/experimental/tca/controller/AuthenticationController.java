@@ -24,6 +24,6 @@ public class AuthenticationController {
 	
 	@PostMapping("/login")
 	public ResponseEntity<Response> employeeLogin(@RequestBody Request<EmpAcc> request){
-		return ResponseEntity.ok(authenticationService.employee_login(request));
+		return ResponseEntity.ok(authenticationService.employeeLogin(request));
 	}
 }

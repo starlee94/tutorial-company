@@ -1,5 +1,7 @@
 package com.experimental.tca.config;
 
+import com.experimental.tca.mapper.EmpAccMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,20 +14,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.experimental.tca.repository.EmpAccRepository;
 
-import lombok.RequiredArgsConstructor;
 
 @Configuration
-@RequiredArgsConstructor
 public class ApplicationConfiguration {
 
 	@Autowired
-	private final EmpAccRepository empAccRepository;
-	
+	private EmpAccMapper empAccMapper;
+
 	@Bean
 	public UserDetailsService userDetailsService() {
-		return username -> empAccRepository.findByUsername(username).stream().findAny()
+		return username -> empAccMapper.findByUsername(username)
 										   .orElseThrow(() -> new UsernameNotFoundException("User not found."));
 			}
 	

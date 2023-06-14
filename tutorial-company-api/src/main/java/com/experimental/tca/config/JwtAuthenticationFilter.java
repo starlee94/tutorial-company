@@ -2,6 +2,8 @@ package com.experimental.tca.config;
 
 import java.io.IOException;
 
+import com.experimental.tca.mapper.TokenMapper;
+import com.experimental.tca.model.Token;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +13,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import com.experimental.tca.model.Token;
-import com.experimental.tca.repository.TokenRepository;
 import com.experimental.tca.service.JwtService;
 
 import javax.servlet.FilterChain;
@@ -28,9 +27,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 
 	private final JwtService jwtService;
 	private final UserDetailsService userDetailsService;
-	
+
 	@Autowired
-	private final TokenRepository tokenRepository;
+	private final TokenMapper tokenMapper;
 	
 	@Override
 	protected void doFilterInternal(
@@ -38,7 +37,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 			@NonNull HttpServletResponse response,
 			@NonNull FilterChain filterChain)
 			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
 		final String userName;
@@ -50,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 		userName = jwtService.extractUsername(jwt);
 		if(userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
-			boolean isTokenValid = tokenRepository.findByToken(jwt)
+			boolean isTokenValid = tokenMapper.findByToken(jwt)
 					.map(t -> !t.isRevoked())
 					.orElse(false);
 			if(jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
@@ -62,8 +61,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 				SecurityContextHolder.getContext().setAuthentication(authToken);
 				
 			}
-			if(jwtService.isTokenValid(jwt, userDetails) == false) {
-				tokenRepository.delete(tokenRepository.findByToken(jwt).get());
+			if(!jwtService.isTokenValid(jwt, userDetails)) {
+				tokenMapper.delete(tokenMapper.findByToken(jwt).orElse(new Token()));
 			}
 			
 			filterChain.doFilter(request, response);
