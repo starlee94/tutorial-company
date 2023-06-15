@@ -1,12 +1,12 @@
 package com.experimental.tca.controller;
 
-import com.experimental.tca.model.EmpAcc;
+import com.experimental.tca.entity.EmpAcc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.experimental.tca.data.Request;
-import com.experimental.tca.data.Response;
+import com.experimental.tca.domain.req.Request;
+import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.service.EmpAccService;
 
 @RestController

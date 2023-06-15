@@ -1,7 +1,7 @@
 package com.experimental.tca.mapper;
 
-import com.experimental.tca.model.AuditLog;
-import com.experimental.tca.model.EmpAcc;
+import com.experimental.tca.entity.AuditLog;
+import com.experimental.tca.entity.EmpAcc;
 import org.apache.ibatis.annotations.*;
 
 

@@ -1,7 +1,8 @@
-package com.experimental.tca.model;
+package com.experimental.tca.entity;
 
 import javax.persistence.*;
 
+import com.experimental.tca.constant.TokenType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

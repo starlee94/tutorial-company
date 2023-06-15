@@ -1,6 +1,6 @@
 package com.experimental.tca.mapper;
 
-import com.experimental.tca.model.RmAccess;
+import com.experimental.tca.entity.RmAccess;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;

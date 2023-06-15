@@ -1,9 +1,9 @@
 package com.experimental.tca.util;
 
 import java.util.List;
-import com.experimental.tca.data.Request;
+import com.experimental.tca.domain.req.Request;
 import com.experimental.tca.mapper.EmpAccMapper;
-import com.experimental.tca.model.EmpAcc;
+import com.experimental.tca.entity.EmpAcc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

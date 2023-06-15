@@ -3,15 +3,16 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.entity.AuditLog;
+import com.experimental.tca.entity.EmpAcc;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
-import com.experimental.tca.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.experimental.tca.data.Request;
-import com.experimental.tca.data.Response;
+import com.experimental.tca.domain.req.Request;
+import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.util.Verification;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

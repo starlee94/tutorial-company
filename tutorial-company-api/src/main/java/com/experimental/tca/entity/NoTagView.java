@@ -1,4 +1,4 @@
-package com.experimental.tca.model;
+package com.experimental.tca.entity;
 
 import java.io.Serializable;
 

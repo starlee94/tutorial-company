@@ -1,17 +1,16 @@
-package com.experimental.tca.data;
+package com.experimental.tca.domain.req;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+@lombok.Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Response<T> {
+public class Request<T> {
 
-	private String infoId;
-	private String infoMsg;
 	private T data;
 }
+
+

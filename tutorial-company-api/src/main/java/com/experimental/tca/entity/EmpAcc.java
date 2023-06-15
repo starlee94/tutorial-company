@@ -1,8 +1,10 @@
-package com.experimental.tca.model;
+package com.experimental.tca.entity;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.experimental.tca.constant.Role;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
