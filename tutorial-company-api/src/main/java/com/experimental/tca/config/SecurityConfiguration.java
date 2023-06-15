@@ -12,18 +12,31 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.web.util.matcher.RequestMatcher;
-
-import javax.servlet.http.HttpServletRequest;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class SecurityConfiguration {
+public class SecurityConfiguration{
 	
 	private final JwtAuthenticationFilter jwtAuthFilter;
 	private final AuthenticationProvider authenticationProvider;
 	private final LogoutHandler logoutHandler;
+
+	private static final String[] AUTH_WHITELIST = {
+			// -- Swagger UI v2
+			"/v2/api-docs",
+			"/swagger-resources",
+			"/swagger-resources/**",
+			"/configuration/ui",
+			"/configuration/security",
+			"/swagger-ui.html",
+			"/webjars/**",
+			// -- Swagger UI v3 (OpenAPI)
+			"/v3/api-docs/**",
+			"/swagger-ui/**",
+			// other public endpoints of your API may be appended to this array
+			"/api/v1/auth/**"
+	};
 	
 
 	@Bean
@@ -31,7 +44,7 @@ public class SecurityConfiguration {
 		http.csrf()
 		.disable()
 		.authorizeHttpRequests()
-		.antMatchers("/api/v1/auth/**")
+		.antMatchers(AUTH_WHITELIST)
 		.permitAll()
 		.anyRequest()
 		.authenticated()
