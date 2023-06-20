@@ -11,9 +11,9 @@ spring:
     restart:
       enabled: true
 
-  springdoc:
-    api-docs:
-      path: /reflectoring-openapi
+springdoc:
+  swagger-ui:
+    defaultModelsExpandDepth: -1
 #mybatis-plus:
 #  configuration:
 #    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
