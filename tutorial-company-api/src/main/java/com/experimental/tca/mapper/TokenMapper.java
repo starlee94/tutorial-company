@@ -13,6 +13,14 @@ public interface TokenMapper {
     @Result(property = "revoked", column = "revoked")
     @Result(property = "token", column = "token")
     @Result(property = "tokenType", column = "token_type")
+    @Select("select * from Token")
+    List<Token> findAll();
+
+
+    @Result(property = "id", column = "id")
+    @Result(property = "revoked", column = "revoked")
+    @Result(property = "token", column = "token")
+    @Result(property = "tokenType", column = "token_type")
     @Select("select * from Token where i_emp_id =#{id} and revoked=0")
     List<Token> findAllValidTokenByUser(Integer id);
 
@@ -21,7 +29,6 @@ public interface TokenMapper {
     @Result(property = "token", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
-
     @Select("select * from Token where token=#{token}")
     Optional<Token> findByToken(String token);
 

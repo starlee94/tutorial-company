@@ -19,6 +19,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+/**
+ * @author star.lee
+ */
 @Data
 @Builder
 @NoArgsConstructor

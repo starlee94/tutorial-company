@@ -1,7 +1,6 @@
 package com.experimental.tca.controller;
 
-import com.experimental.tca.domain.req.Request;
-import com.experimental.tca.entity.EmpAcc;
+import com.experimental.tca.domain.req.EmployeeLoginReq;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +13,9 @@ import com.experimental.tca.service.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author star.lee
+ */
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class AuthenticationController {
 	private AuthenticationService authenticationService;
 	
 	@PostMapping("/login")
-	public ResponseEntity<Response> employeeLogin(@RequestBody Request<EmpAcc> request){
+	public ResponseEntity<Response> employeeLogin(@RequestBody EmployeeLoginReq request){
 		return ResponseEntity.ok(authenticationService.employeeLogin(request));
 	}
 }

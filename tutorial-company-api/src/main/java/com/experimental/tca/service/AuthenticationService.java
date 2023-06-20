@@ -3,6 +3,7 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.domain.req.EmployeeLoginReq;
 import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.constant.TokenType;
 import com.experimental.tca.entity.EmpAcc;
@@ -15,12 +16,14 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
-import com.experimental.tca.domain.req.Request;
 import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.util.Verification;
 
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author star.lee
+ */
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -40,78 +43,88 @@ public class AuthenticationService {
 
 	@Autowired
 	private final Verification verification;
-	public Response employeeLogin(Request<EmpAcc> request) {
+	public Response employeeLogin(EmployeeLoginReq request) {
 
 		EmpAcc empAcc;
 		AuditLog auditLog = new AuditLog();
 
-		Response response;
+		Timestamp currentTime = new Timestamp(new Date().getTime());
 
 		String infoId = "";
-		String infoMsg = verification.verifyEmployee(request, empAccMapper.findAll(), "employee_login");
+		String infoMsg = verification.verifyEmployee(request, "employee_login");
+		if (infoMsg != null) {
 
+			return Response.builder()
+					.infoId(infoId)
+					.infoMsg(infoMsg)
+					.build();
+		}
 		try {
 
 
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
-							request.getData().getUsername(),
-							request.getData().getPassword())
+							request.getUsername(),
+							request.getPassword())
 					);
 
 			infoId = "0";
-			empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(new EmpAcc());
-			String token = jwtService.generateToken(new HashMap<>(), request.getData().getUsername());
+			empAcc = empAccMapper.findByUsername(request.getUsername()).orElse(new EmpAcc());
+			String token = jwtService.generateToken(new HashMap<>(), request.getUsername());
 
-			if (!tokenMapper.findByToken(token).isPresent()){
+			for (Token t : tokenMapper.findAll()) {
+				if(jwtService.extractUsername(t.getToken()).equals(request.getUsername())){
+					infoMsg = "Employee " + request.getUsername() + " already logged in";
+					break;
+				}
+			}
 
-				auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
-				auditLog.setVc_audit_descript("Employee " + request.getData().getUsername() + " logged in.");
+			if (infoMsg == null) {
+
+				auditLog.setDt_timestamp(currentTime);
+				auditLog.setVc_audit_descript("Employee " + request.getUsername() + " logged in.");
 				auditLog.setI_emp_id(empAcc.getId());
 
 				auditLogMapper.save(auditLog);
-				infoMsg = "Employee " + request.getData().getUsername() + " logged in.";
+				infoMsg = "Employee " + request.getUsername() + " logged in.";
 
-				response = Response.builder()
+				revokeAllUserTokens(empAcc.getId());
+				saveUserToken(empAcc, token);
+
+				System.out.println("[" + currentTime + "] " + infoMsg);
+
+				return Response.builder()
 						.infoId(infoId)
 						.infoMsg(infoMsg)
 						.data(token)
 						.build();
 
-				revokeAllUserTokens(empAcc);
-				saveUserToken(empAcc, response.getData().toString());
-
-				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
 			}else {
-				infoMsg = "Employee " + request.getData().getUsername() + " already logged in.";
 
-				response = Response.builder()
+				System.out.println("[" + currentTime + "] " + infoMsg);
+				return Response.builder()
 						.infoId(infoId)
 						.infoMsg(infoMsg)
-						.data(token)
 						.build();
 
-				System.out.println(infoMsg);
 			}
 
 		}
 		catch(Exception e) {
+
 			e.printStackTrace();
 
 			infoMsg = e.toString();
-			response = Response.builder()
+			return Response.builder()
 						.infoId(infoId)
 						.infoMsg(infoMsg)
 						.build();
 		}
-		
-		
-		return response;
 
 	}
 	
-	private void revokeAllUserTokens(EmpAcc empAcc) {
-		List<Token> validUserTokens = tokenMapper.findAllValidTokenByUser(empAcc.getId());
+	private void revokeAllUserTokens(Integer id) {
+		List<Token> validUserTokens = tokenMapper.findAllValidTokenByUser(id);
 		if(validUserTokens.isEmpty()) {
 			return;
 		}

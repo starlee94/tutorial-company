@@ -3,15 +3,17 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.domain.Employee;
+import com.experimental.tca.domain.req.EmployeeActionReq;
+import com.experimental.tca.domain.req.RegisterEmployeeReq;
+import com.experimental.tca.domain.req.EmployerActionReq;
 import com.experimental.tca.entity.AuditLog;
-import com.experimental.tca.entity.EmpAcc;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.experimental.tca.domain.req.Request;
 import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.util.Verification;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,6 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author star.lee
+ */
 @Service
 @RequiredArgsConstructor
 public class EmpAccService {
@@ -40,34 +45,34 @@ public class EmpAccService {
 	@Autowired
 	private final Verification verification;
 
-	public Response registerEmployee(Request<EmpAcc> request) {
+	public Response registerEmployee(RegisterEmployeeReq request) {
 
 		String infoId = "0";
-		String infoMsg = "";
-		EmpAcc empAcc = new EmpAcc();
+		String infoMsg = verification.verifyEmployee(request, "register_employee");
 		AuditLog auditLog = new AuditLog();
 
-		if (null == verification.verifyEmployee(request, empAccMapper.findAll(), "register_employee")) {
-
-			empAcc = request.getData();
+		if (null == infoMsg) {
 
 			try {
-				empAccMapper.save(empAcc);
+
+				empAccMapper.save(empAccMapper.findAll().size() + 1, request.getUsername());
 			}catch (Exception e){
 				e.printStackTrace();
 				infoId = "1";
 			}
 
+			if ("0".equals(infoId)) {
+				infoMsg = "Employee " + request.getUsername() + " created.";
+
+				auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
+				auditLog.setVc_audit_descript(infoMsg);
+				auditLog.setI_emp_id(request.getEmployerId());
+
+				auditLogMapper.save(auditLog);
+				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
+			}
+
 		}
-		if ("0".equals(infoId)) {
-			infoMsg = "Employee " + empAcc.getUsername() + " created.";
-
-			auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
-			auditLog.setVc_audit_descript(infoMsg);
-			auditLog.setI_emp_id(request.getData().getId());
-
-		}
-
 
 		return Response.builder()
 				.infoId(infoId)
@@ -75,12 +80,13 @@ public class EmpAccService {
 				.build();
 	}
 
-    public Response viewAllEmployee(Request<EmpAcc> request) {
+    public Response viewAllEmployee(Integer id) {
 
-		List<EmpAcc> empAccs = empAccMapper.findAll();
+		List<Employee> employees = empAccMapper.findAll();
+
 
         String infoId = "";
-        String infoMsg = verification.verifyEmployee(request, empAccs, "elevated_employee_action");
+        String infoMsg = verification.verifyEmployee(id, "elevated_employee_action");
 
         if (null == infoMsg) {
 			infoId = "0";
@@ -88,45 +94,43 @@ public class EmpAccService {
         }
 		else {
 			infoId = "1";
-			empAccs = null;
+			employees = null;
 		}
 
-		System.out.println("["+ new Timestamp(new Date().getTime()) + "] Employee "+ empAccMapper.findById(request.getData().getId()) );
+		System.out.println("["+ new Timestamp(new Date().getTime()) + "] Employee "+ empAccMapper.findById(id).getUsername() + " called get all employees." );
 
 		return Response.builder()
 				.infoId(infoId)
 				.infoMsg(infoMsg)
-				.data(empAccs)
+				.data(employees)
 				.build();
     }
 
-	public Response revokeEmployee(Request<EmpAcc> request) {
+	public Response revokeEmployee(EmployerActionReq request) {
 
 		String infoId = "";
 		String infoMsg = "";
 
 		AuditLog auditLog;
 
-		EmpAcc empAcc;
+		Employee employee;
 
-		if (null == verification.verifyEmployee(request, empAccMapper.findAll(), "revoke_employee")) {
+		if (null == verification.verifyEmployee(request, "revoke_employee")) {
 
 			try {
 
-				empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(new EmpAcc());
+				employee = empAccMapper.findById(request.getEmployeeId());
 
-				empAcc.setStatus(0);
-
-				empAccMapper.updateStatusIdById(empAcc);
+				empAccMapper.updateStatusIdById(employee.getId(), 0);
 
 				infoId = "0";
-				infoMsg = "Employee " + request.getData().getUsername() + " was deactivated.";
+				infoMsg = "Employee " + employee.getUsername() + " was deactivated.";
 
 				auditLog = new AuditLog();
 
 				auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
 				auditLog.setVc_audit_descript(infoMsg);
-				auditLog.setI_emp_id(request.getData().getId());
+				auditLog.setI_emp_id(request.getEmployerId());
 
 				auditLogMapper.save(auditLog);
 
@@ -140,6 +144,41 @@ public class EmpAccService {
 
 		}
 
+		return Response.builder()
+				.infoId(infoId)
+				.infoMsg(infoMsg)
+				.build();
+	}
+
+	public Response updateEmployee(EmployeeActionReq request){
+
+		String infoId = "0";
+		String infoMsg = verification.verifyEmployee(request, "activate_employee");
+		Timestamp currentTime =  new Timestamp(new Date().getTime());
+		AuditLog auditLog = new AuditLog();
+
+
+
+		if (null == infoMsg) {
+			try {
+				if ("PWD".equals(request.getAction())) {
+					empAccMapper.updatePasswordById(request.getId(), request.getData());
+					empAccMapper.updateStatusIdById(request.getId(), 1);
+					infoMsg = "Employee " + empAccMapper.findById(request.getId()).getUsername() + " activated.";
+				}
+
+				auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
+				auditLog.setVc_audit_descript(infoMsg);
+				auditLog.setI_emp_id(request.getId());
+
+				auditLogMapper.save(auditLog);
+
+			}
+			catch (Exception e) {
+				infoMsg = e.toString();
+			}
+		}
+		System.out.println("[" + currentTime + "] " + infoMsg);
 		return Response.builder()
 				.infoId(infoId)
 				.infoMsg(infoMsg)

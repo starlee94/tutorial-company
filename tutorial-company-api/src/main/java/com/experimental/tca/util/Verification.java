@@ -1,9 +1,10 @@
 package com.experimental.tca.util;
 
-import java.util.List;
-import com.experimental.tca.domain.req.Request;
+import com.experimental.tca.domain.Employee;
+import com.experimental.tca.domain.req.EmployeeLoginReq;
+import com.experimental.tca.domain.req.RegisterEmployeeReq;
+import com.experimental.tca.domain.req.EmployerActionReq;
 import com.experimental.tca.mapper.EmpAccMapper;
-import com.experimental.tca.entity.EmpAcc;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -17,23 +18,24 @@ public class Verification {
 
 	private String[] errorMsgConstant = {"Employee not found."};
 
-	private String employerAction(Request<? extends EmpAcc> request, List<EmpAcc> empAccs) {
+	private String employerAction(Integer id) {
 
-		EmpAcc empAcc = empAccMapper.findById(request.getData().getId());
+		Employee employee = empAccMapper.findById(id);
 		//1. Check if the employer exist
-		if (empAcc == null){
+		if (employee == null){
 			return errorMsgConstant[0];
 		}
 
-		if(empAcc.getTagId() == null || (empAcc.getTagId() != 1 && empAcc.getTagId() != 2))
+		if(employee.getTagId() == null || (employee.getTagId() != 1 && employee.getTagId() != 2))
 		{return "Employer does not have permission.";}
 
 		return null;
 	}
 
-	public String verifyEmployee(Request<EmpAcc> request, List<EmpAcc> empAccs, String option) {
+	public String verifyEmployee(Object obj, String option) {
 
-		EmpAcc empAcc;
+		Employee employee;
+
 		String errorMsg = null;
 
 		switch (option) {
@@ -42,44 +44,45 @@ public class Verification {
 
 				//Employer who plan to access privileged action
 				//1. Pass employerAction method
-				errorMsg = employerAction(request, empAccs);
+				errorMsg = employerAction(Integer.parseInt(obj.toString()));
 
 				break;
 
 			case "register_employee":
-
+			RegisterEmployeeReq regReq = (RegisterEmployeeReq)obj;
 			//Employer who plan to register new employee
 			//1. Pass employerAction method			
-			errorMsg = employerAction(request, empAccs);
+			errorMsg = employerAction(regReq.getEmployerId());
 
 			//2. Check if the new employee exists in database
-			if(errorMsg == null){
-					empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
-					if(empAcc != null) {errorMsg = "Employee exist in database.";}
-				}
+			if(errorMsg == null && empAccMapper.findByUsername(regReq.getUsername()).isPresent()){
+						errorMsg = "Employee exist in database.";
+					}
 
 			break;
 
 			case "revoke_employee":
-
+				EmployerActionReq revReq = (EmployerActionReq)obj;
 				//Employer who plan to revoke employee account
 				//1. Pass employerAction method
-				errorMsg = employerAction(request, empAccs);
+				errorMsg = employerAction(revReq.getEmployerId());
 
 				//2. Check if employee exist in database
 				if(errorMsg == null){
-					empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
-					if(empAcc == null) {errorMsg = errorMsgConstant[0];}
+					employee = empAccMapper.findById(revReq.getEmployeeId());
+					if(employee == null) {errorMsg = errorMsgConstant[0];}
 				}
 				break;
 
 			case "employee_login":
+				EmployeeLoginReq loginReq = (EmployeeLoginReq) obj;
 
 				//Employee attempt to login
 				//1. Check if employee exist in database
-				empAcc = empAccMapper.findByUsername(request.getData().getUsername()).orElse(null);
-
-				if(empAcc == null){ errorMsg = errorMsgConstant[0];}
+				if(!empAccMapper.findByUsername(loginReq.getUsername()).isPresent())
+				{
+					errorMsg = errorMsgConstant[0];
+				}
 
 				break;
 

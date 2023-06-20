@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/demo-controller")
-public class DemoController {
+public class DemoController implements BearerAuthController{
 	
 	@GetMapping
 	public ResponseEntity<String> sayHello(){
