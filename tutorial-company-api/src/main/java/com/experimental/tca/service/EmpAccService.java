@@ -3,6 +3,8 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.constant.Message;
+import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.domain.Employee;
 import com.experimental.tca.domain.req.EmployeeActionReq;
 import com.experimental.tca.domain.req.RegisterEmployeeReq;
@@ -11,14 +13,11 @@ import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.util.Verification;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import javax.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -29,159 +28,145 @@ import lombok.RequiredArgsConstructor;
 public class EmpAccService {
 
 	@Autowired
-	private AuditLogMapper auditLogMapper;
-	@Autowired
-	private EntityManager entityManager;
+	private final AuditLogMapper auditLogMapper;
 
 	@Autowired
 	private final EmpAccMapper empAccMapper;
 
-	private final JwtService jwtService;
-
-	private final PasswordEncoder passwordEncoder;
-
-	private final ObjectMapper oMap = new ObjectMapper();
-
 	@Autowired
 	private final Verification verification;
 
+	private ResultCode resultCode;
+
+	private final AuditLog auditLog = new AuditLog();
+
+	private final Timestamp currentTime =  new Timestamp(new Date().getTime());
+	private Object[] data;
+
 	public Response registerEmployee(RegisterEmployeeReq request) {
 
-		String infoId = "0";
-		String infoMsg = verification.verifyEmployee(request, "register_employee");
-		AuditLog auditLog = new AuditLog();
+		resultCode = verification.verifyEmployee(request, "register_employee");
+		data = new Object[1];
 
-		if (null == infoMsg) {
-
+		if (resultCode == null) {
+			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 			try {
-
 				empAccMapper.save(empAccMapper.findAll().size() + 1, request.getUsername());
-			}catch (Exception e){
-				e.printStackTrace();
-				infoId = "1";
-			}
 
-			if ("0".equals(infoId)) {
-				infoMsg = "Employee " + request.getUsername() + " created.";
+				data[0] = Message.EMPLOYEE.getMsg() + " " + request.getUsername() + " created.";
 
 				auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
-				auditLog.setVc_audit_descript(infoMsg);
+				auditLog.setVc_audit_descript(data[0].toString());
 				auditLog.setI_emp_id(request.getEmployerId());
 
 				auditLogMapper.save(auditLog);
-				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
+				System.out.println("[" + auditLog.getDt_timestamp() + "] " + data[0]);
+			}catch (Exception e){
+				e.printStackTrace();
+				resultCode = ResultCode.MSG_SYSTEM_ERROR;
 			}
-
 		}
 
 		return Response.builder()
-				.infoId(infoId)
-				.infoMsg(infoMsg)
+				.infoId(resultCode.getCode())
+				.infoMsg(resultCode.getMessage())
+				.data(data)
 				.build();
 	}
 
     public Response viewAllEmployee(Integer id) {
 
 		List<Employee> employees = empAccMapper.findAll();
+		resultCode = verification.verifyEmployee(id, "elevated_employee_action");
+		data = new Object[1];
+		try {
 
+			if (resultCode == null) {
+				resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
+				System.out.println("["+ new Timestamp(new Date().getTime()) + "] Employee "+ empAccMapper.findById(id).getUsername() + " called get all employees." );
+			}
+			else {
+				employees = null;
+			}
+			data[0] = employees;
 
-        String infoId = "";
-        String infoMsg = verification.verifyEmployee(id, "elevated_employee_action");
+		} catch (Exception e) {
+			e.printStackTrace();
 
-        if (null == infoMsg) {
-			infoId = "0";
-			infoMsg = "SUCCESS";
-        }
-		else {
-			infoId = "1";
-			employees = null;
+			resultCode = ResultCode.MSG_SYSTEM_ERROR;
 		}
 
-		System.out.println("["+ new Timestamp(new Date().getTime()) + "] Employee "+ empAccMapper.findById(id).getUsername() + " called get all employees." );
-
 		return Response.builder()
-				.infoId(infoId)
-				.infoMsg(infoMsg)
-				.data(employees)
+				.infoId(resultCode.getCode())
+				.infoMsg(resultCode.getMessage())
+				.data(data)
 				.build();
     }
 
 	public Response revokeEmployee(EmployerActionReq request) {
 
-		String infoId = "";
-		String infoMsg = "";
+		resultCode = verification.verifyEmployee(request, "revoke_employee");
+		data = new Object[1];
 
-		AuditLog auditLog;
-
-		Employee employee;
-
-		if (null == verification.verifyEmployee(request, "revoke_employee")) {
-
+		if (resultCode == null) {
+			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 			try {
 
-				employee = empAccMapper.findById(request.getEmployeeId());
-
+				Employee employee = empAccMapper.findById(request.getEmployeeId());
 				empAccMapper.updateStatusIdById(employee.getId(), 0);
-
-				infoId = "0";
-				infoMsg = "Employee " + employee.getUsername() + " was deactivated.";
-
-				auditLog = new AuditLog();
+				data[0] = Message.EMPLOYEE.getMsg() + "Employee " + employee.getUsername() + " was deactivated.";
 
 				auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
-				auditLog.setVc_audit_descript(infoMsg);
+				auditLog.setVc_audit_descript(data[0].toString());
 				auditLog.setI_emp_id(request.getEmployerId());
 
 				auditLogMapper.save(auditLog);
 
-				System.out.println("[" + auditLog.getDt_timestamp() + "] " + infoMsg);
+				System.out.println("[" + auditLog.getDt_timestamp() + "] " + data[0].toString());
 
 			}catch(Exception e) {
-
-				infoMsg = e.toString();
 				e.printStackTrace();
+				resultCode = ResultCode.MSG_SYSTEM_ERROR;
 			}
-
 		}
-
 		return Response.builder()
-				.infoId(infoId)
-				.infoMsg(infoMsg)
+				.infoId(resultCode.getCode())
+				.infoMsg(resultCode.getMessage())
+				.data(data)
 				.build();
 	}
 
 	public Response updateEmployee(EmployeeActionReq request){
 
-		String infoId = "0";
-		String infoMsg = verification.verifyEmployee(request, "activate_employee");
-		Timestamp currentTime =  new Timestamp(new Date().getTime());
-		AuditLog auditLog = new AuditLog();
+		resultCode = verification.verifyEmployee(request, "activate_employee");
+		data = new Object[1];
 
-
-
-		if (null == infoMsg) {
+		if (resultCode == null) {
+			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 			try {
 				if ("PWD".equals(request.getAction())) {
 					empAccMapper.updatePasswordById(request.getId(), request.getData());
 					empAccMapper.updateStatusIdById(request.getId(), 1);
-					infoMsg = "Employee " + empAccMapper.findById(request.getId()).getUsername() + " activated.";
+					data[0] = Message.EMPLOYEE.getMsg() + " " + empAccMapper.findById(request.getId()).getUsername() + " activated.";
 				}
 
 				auditLog.setDt_timestamp(new Timestamp(new Date().getTime()));
-				auditLog.setVc_audit_descript(infoMsg);
+				auditLog.setVc_audit_descript(data[0].toString());
 				auditLog.setI_emp_id(request.getId());
 
 				auditLogMapper.save(auditLog);
 
 			}
 			catch (Exception e) {
-				infoMsg = e.toString();
+				e.printStackTrace();
+				resultCode = ResultCode.MSG_SYSTEM_ERROR;
 			}
 		}
-		System.out.println("[" + currentTime + "] " + infoMsg);
+		System.out.println("[" + currentTime + "] " + data[0].toString());
 		return Response.builder()
-				.infoId(infoId)
-				.infoMsg(infoMsg)
+				.infoId(resultCode.getCode())
+				.infoMsg(resultCode.getMessage())
+				.data(data)
 				.build();
 	}
 

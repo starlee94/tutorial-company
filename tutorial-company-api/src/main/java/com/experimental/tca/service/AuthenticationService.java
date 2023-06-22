@@ -3,6 +3,8 @@ package com.experimental.tca.service;
 import java.sql.Timestamp;
 import java.util.*;
 
+import com.experimental.tca.constant.Message;
+import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.domain.req.EmployeeLoginReq;
 import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.constant.TokenType;
@@ -11,6 +13,7 @@ import com.experimental.tca.entity.Token;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -36,92 +39,84 @@ public class AuthenticationService {
 
 	@Autowired
 	private final TokenMapper tokenMapper;
-	
-	private final AuthenticationManager authenticationManager;
-	
-	private final JwtService jwtService;
 
 	@Autowired
 	private final Verification verification;
-	public Response employeeLogin(EmployeeLoginReq request) {
 
-		EmpAcc empAcc;
+	@Autowired
+	private final JwtService jwtService;
+
+	@Autowired
+	private final AuthenticationManager authenticationManager;
+
+	private final Timestamp currentTime = new Timestamp(new Date().getTime());
+
+	private final String[] data = new String[2];
+
+	public Response employeeLogin(EmployeeLoginReq request) throws NullPointerException{
+
+		EmpAcc empAcc =new EmpAcc();
 		AuditLog auditLog = new AuditLog();
+		String token = "";
 
-		Timestamp currentTime = new Timestamp(new Date().getTime());
-
-		String infoId = "";
-		String infoMsg = verification.verifyEmployee(request, "employee_login");
-		if (infoMsg != null) {
-
+		ResultCode resultCode = verification.verifyEmployee(request, "employee_login");
+		if (resultCode != null) {
 			return Response.builder()
-					.infoId(infoId)
-					.infoMsg(infoMsg)
+					.infoId(resultCode.getCode())
+					.infoMsg(resultCode.getMessage())
 					.build();
 		}
+		resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 		try {
-
 
 			authenticationManager.authenticate(
 					new UsernamePasswordAuthenticationToken(
 							request.getUsername(),
 							request.getPassword())
 					);
-
-			infoId = "0";
 			empAcc = empAccMapper.findByUsername(request.getUsername()).orElse(new EmpAcc());
-			String token = jwtService.generateToken(new HashMap<>(), request.getUsername());
-
+			token = jwtService.generateToken(new HashMap<>(), request.getUsername());
 			for (Token t : tokenMapper.findAll()) {
-				if(jwtService.extractUsername(t.getToken()).equals(request.getUsername())){
-					infoMsg = "Employee " + request.getUsername() + " already logged in";
+				if(jwtService.extractUsername(t.getToken()).equals(request.getUsername())) {
+
+					data[0] = token;
+					data[1] = Message.EMPLOYEE.getMsg() + " " + request.getUsername() + " already logged in";
 					break;
 				}
 			}
-
-			if (infoMsg == null) {
-
 				auditLog.setDt_timestamp(currentTime);
 				auditLog.setVc_audit_descript("Employee " + request.getUsername() + " logged in.");
 				auditLog.setI_emp_id(empAcc.getId());
 
 				auditLogMapper.save(auditLog);
-				infoMsg = "Employee " + request.getUsername() + " logged in.";
+				data[0] = token;
+				data[1] = Message.EMPLOYEE.getMsg() + " " + request.getUsername() + " logged in.";
 
 				revokeAllUserTokens(empAcc.getId());
 				saveUserToken(empAcc, token);
 
-				System.out.println("[" + currentTime + "] " + infoMsg);
-
-				return Response.builder()
-						.infoId(infoId)
-						.infoMsg(infoMsg)
-						.data(token)
-						.build();
-
-			}else {
-
-				System.out.println("[" + currentTime + "] " + infoMsg);
-				return Response.builder()
-						.infoId(infoId)
-						.infoMsg(infoMsg)
-						.build();
-
-			}
+				System.out.println("[" + currentTime + "] " + data[1]);
 
 		}
-		catch(Exception e) {
-
+		catch (ExpiredJwtException e)
+		{
+			recursionTokenRemoval(empAcc);
+			System.out.println("Token expired removed.");
+			employeeLogin(request);
+		}
+		catch(Exception e)
+		{
+			resultCode = ResultCode.MSG_SYSTEM_ERROR;
 			e.printStackTrace();
-
-			infoMsg = e.toString();
-			return Response.builder()
-						.infoId(infoId)
-						.infoMsg(infoMsg)
-						.build();
 		}
 
+		return Response.builder()
+				.infoId(resultCode.getCode())
+				.infoMsg(resultCode.getMessage())
+				.data(data)
+				.build();
 	}
+
 	
 	private void revokeAllUserTokens(Integer id) {
 		List<Token> validUserTokens = tokenMapper.findAllValidTokenByUser(id);
@@ -142,5 +137,13 @@ public class AuthenticationService {
 		
 		tokenMapper.save(token);
 	}
-	
+
+	private void recursionTokenRemoval(EmpAcc empAcc){
+		List<Token> tokens = tokenMapper.findAll();
+		for(Token t : tokens){
+			if (Objects.equals(t.getEmpAcc().getId(), empAcc.getId())){
+				tokenMapper.delete(t);
+			}
+		}
+	}
 }
