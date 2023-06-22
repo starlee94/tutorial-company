@@ -2,7 +2,6 @@ package com.experimental.tca.service;
 
 import java.security.Key;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -14,12 +13,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+/**
+ * @author star.lee
+ */
 @Service
 public class JwtService {
 
 	private static final String SECRET_KEY = "782F4125442A472D4B6150645367566B59703373367639792442264528482B4D";
-	private int minutes = 120; //adjust how long will the token expired in minutes
-	private Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * minutes);
+	private static final int MINUTES = 120; //adjust how long will the token expired in minutes
+	private final Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * MINUTES);
 		
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -29,42 +31,14 @@ public class JwtService {
 		final Claims claims = extractAllClaims(token);
 		return claimsResolver.apply(claims);
 	}
-	
-		
-	public String generateToken(UserDetails userDetails) {
-		return generateToken(new HashMap<>(), userDetails);
-	}
-	
+
 	public String generateToken(
 			Map<String, Object> extractClaims,
-			String Username) {
+			String username) {
 		
 		return Jwts.builder()
 				   .setClaims(extractClaims)
-				   .setSubject(Username)
-				   .setIssuedAt(new Date(System.currentTimeMillis()))
-				   .setExpiration(expiration)
-				   .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-				   .compact();
-	}
-	
-	public String generateToken(
-			Map<String, Object> extractClaims,
-			UserDetails userDetails) {
-		
-		return Jwts.builder()
-				   .setClaims(extractClaims)
-				   .setIssuedAt(new Date(System.currentTimeMillis()))
-				   .setExpiration(expiration)
-				   .signWith(getSignInKey(), SignatureAlgorithm.HS256)
-				   .compact();
-	}
-	
-	public String generateToken(
-			Map<String, Object> extractClaims) {
-		
-		return Jwts.builder()
-				   .setClaims(extractClaims)
+				   .setSubject(username)
 				   .setIssuedAt(new Date(System.currentTimeMillis()))
 				   .setExpiration(expiration)
 				   .signWith(getSignInKey(), SignatureAlgorithm.HS256)
@@ -77,12 +51,12 @@ public class JwtService {
 	}
 	
 	private boolean isTokenExpired(String token) {
-		// TODO Auto-generated method stub
+
 		return extractExpiration(token).before(new Date());
 	}
 
 	private Date extractExpiration(String token) {
-		// TODO Auto-generated method stub
+
 		return extractClaim(token, Claims::getExpiration);
 	}
 
@@ -95,7 +69,7 @@ public class JwtService {
 	}
 
 	private Key getSignInKey() {
-		// TODO Auto-generated method stub
+
 		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
 		
 		return Keys.hmacShaKeyFor(keyBytes);
