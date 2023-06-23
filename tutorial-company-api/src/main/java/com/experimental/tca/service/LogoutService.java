@@ -1,10 +1,12 @@
 package com.experimental.tca.service;
 
+import com.experimental.tca.constant.Common;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
 import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.entity.EmpAcc;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -18,7 +20,11 @@ import com.experimental.tca.entity.Token;
 import java.sql.Timestamp;
 import java.util.Date;
 
+/**
+ * @author star.lee
+ */
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler{
 
@@ -33,6 +39,8 @@ public class LogoutService implements LogoutHandler{
 	@Autowired
 	private final EmpAccMapper empAccMapper;
 
+	private final Timestamp currentTime = new Timestamp(new Date().getTime());
+
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
 		final String authHeader = request.getHeader("Authorization");
@@ -44,21 +52,16 @@ public class LogoutService implements LogoutHandler{
 		}
 		
 		jwt = authHeader.substring(7);
-		Token storedToken = tokenMapper.findByToken(jwt)
-										 .orElse(null);
-
-		if(storedToken != null) {
-			tokenMapper.revokeToken(storedToken);
-		}
+		tokenMapper.findByToken(jwt).ifPresent(tokenMapper::revokeToken);
 
 		String username = jwtService.extractUsername(jwt);
-		String msg = "Employee " + username + " logged out.";
+		String msg = String.format("%s %s logged out.", Common.EMPLOYEE.getMsg(), username);
 
-		auditLog.setDt_timestamp((new Timestamp(new Date().getTime())));
+		auditLog.setDt_timestamp(currentTime);
 		auditLog.setVc_audit_descript(msg);
 		auditLog.setI_emp_id(empAccMapper.findByUsername(username).orElse(new EmpAcc()).getId());
 
 		auditLogMapper.save(auditLog);
-		System.out.println("[" + auditLog.getDt_timestamp() + "] " + msg);
+		log.info("{}", msg);
 	}
 }

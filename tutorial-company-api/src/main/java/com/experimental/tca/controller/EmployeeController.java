@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.experimental.tca.domain.res.Response;
 import com.experimental.tca.service.EmpAccService;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
  * @author star.lee
@@ -33,5 +34,5 @@ public class EmployeeController implements BearerAuthController{
 	}
 
 	@PostMapping("/update/account")
-	public ResponseEntity<Response> updateEmployeeAccount(@RequestBody EmployeeActionReq request) { return ResponseEntity.ok(empAccService.updateEmployee(request));}
+	public ResponseEntity<Response> updateEmployeeAccount(@RequestBody EmployeeActionReq request) {	return ResponseEntity.ok(empAccService.updateEmployee(request));}
 }

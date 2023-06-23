@@ -1,4 +1,4 @@
-package com.experimental.tca.config;
+package com.experimental.tca.filter;
 
 import java.io.IOException;
 
@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
+/**
+ * @author star.lee
+ */
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter{
