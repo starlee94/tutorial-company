@@ -161,6 +161,8 @@ public class EmpAccService {
 
 	public Response updateEmployee(EmployeeActionReq request){
 
+		log.info(Common.LOG_START.getMsg());
+		log.info("updateEmployee --> (id:{}, action:\"{}\", data:\"{}\")", request.getId(), request.getAction(), request.getData());
 		resultCode = verification.verifyEmployee(request, "activate_employee");
 		data = new Object[1];
 

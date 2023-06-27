@@ -3,6 +3,8 @@ server:
   servlet:
     context-path: /companyApi
 spring:
+  application:
+    name: backend
   datasource:
     url: jdbc:mysql://localhost:3306/tutorialdb
     username: root

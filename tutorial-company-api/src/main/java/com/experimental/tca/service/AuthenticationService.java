@@ -98,6 +98,8 @@ public class AuthenticationService {
 
 				log.info("{}", auditLog.getVc_audit_descript());
 
+				log.info(Common.LOG_END.getMsg());
+
 			}
 			catch (ExpiredJwtException e)
 			{
@@ -121,7 +123,6 @@ public class AuthenticationService {
 			data = null;
 			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
 		}
-		log.info(Common.LOG_END.getMsg());
 		return Response.builder()
 				.infoId(resultCode.getCode())
 				.infoMsg(resultCode.getMessage())
