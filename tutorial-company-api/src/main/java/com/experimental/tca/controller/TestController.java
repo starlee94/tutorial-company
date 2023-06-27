@@ -5,9 +5,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * @author star.lee
+ */
 @RestController
 @RequestMapping("/api/v1/demo-controller")
-public class DemoController implements BearerAuthController{
+public class TestController implements BearerAuthController{
 	
 	@GetMapping
 	public ResponseEntity<String> sayHello(){
