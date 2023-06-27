@@ -54,8 +54,6 @@ public class AuthenticationService {
 
 	private final Timestamp currentTime = new Timestamp(new Date().getTime());
 
-	private String[] data = null;
-
 	public Response employeeLogin(EmployeeLoginReq request) {
 
 		log.info(Common.LOG_START.getMsg());
@@ -66,6 +64,7 @@ public class AuthenticationService {
 
 		ResultCode resultCode = verification.verifyEmployee(request, "employee_login");
 
+		String[] data = null;
 		if (resultCode == null) {
 			data = new String[1];
 			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
