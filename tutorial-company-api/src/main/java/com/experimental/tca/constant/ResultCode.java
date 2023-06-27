@@ -3,7 +3,6 @@ package com.experimental.tca.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 
 /**
  * @author star.lee
