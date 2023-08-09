@@ -13,15 +13,15 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
+import static com.experimental.tca.constant.SecurityEnum.MINUTES;
+import static com.experimental.tca.constant.SecurityEnum.SECRET_KEY;
+
 /**
  * @author star.lee
  */
 @Service
 public class JwtService {
-
-	private static final String SECRET_KEY = "782F4125442A472D4B6150645367566B59703373367639792442264528482B4D";
-	private static final int MINUTES = 120; //adjust how long will the token expired in minutes
-	private final Date expiration = new Date(System.currentTimeMillis() + 1000 * 60 * MINUTES);
+	private final Date expiration = new Date(System.currentTimeMillis() + 1000L * 60 * Integer.parseInt(MINUTES.getData()));
 		
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -70,7 +70,7 @@ public class JwtService {
 
 	private Key getSignInKey() {
 
-		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
+		byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY.getData());
 		
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
