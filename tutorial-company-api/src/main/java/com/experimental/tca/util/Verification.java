@@ -2,6 +2,7 @@ package com.experimental.tca.util;
 
 import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.domain.Employee;
+import com.experimental.tca.domain.req.EmployeeActionReq;
 import com.experimental.tca.domain.req.EmployeeLoginReq;
 import com.experimental.tca.domain.req.RegisterEmployeeReq;
 import com.experimental.tca.domain.req.EmployerActionReq;
@@ -59,31 +60,16 @@ public class Verification {
 
 				break;
 
-			case "register_employee":
-			RegisterEmployeeReq regReq = (RegisterEmployeeReq)obj;
-			//Employer who plan to register new employee
-			//1. Pass employerAction method
-				resultCode = employerAction(regReq.getEmployerId());
+			case "employee_action":
 
-			//2. Check if the new employee exists in database
-			if(resultCode == null && empAccMapper.findByUsername(regReq.getUsername()).isPresent()){
-						resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_EXIST_IN_DB;
-					}
+				EmployeeActionReq empReq = (EmployeeActionReq) obj;
 
-			break;
 
-			case "revoke_employee":
-				EmployerActionReq revReq = (EmployerActionReq)obj;
-				//Employer who plan to revoke employee account
-				//1. Pass employerAction method
-				resultCode = employerAction(revReq.getEmployerId());
-
-				//2. Check if employee exist in database
-				if(resultCode == null){
-					employee = empAccMapper.findById(revReq.getEmployeeId());
-					if(employee == null) {
-						resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_NOT_FOUND;
-					}
+				//Employee attempt to log in
+				//1. Check if employee exist in database
+				if(empAccMapper.findById(empReq.getId()) == null)
+				{
+					resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_NOT_FOUND;
 				}
 				break;
 
@@ -95,6 +81,36 @@ public class Verification {
 				if(!empAccMapper.findByUsername(loginReq.getUsername()).isPresent())
 				{
 					resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_NOT_FOUND;
+				}
+				break;
+
+			case "register_employee":
+			RegisterEmployeeReq regReq = (RegisterEmployeeReq)obj;
+			//Employer who plan to register new employee
+			//1. Pass employerAction method
+			resultCode = employerAction(regReq.getEmployerId());
+
+			//2. Check if the new employee exists in database
+			if(resultCode == null && empAccMapper.findByUsername(regReq.getUsername()).isPresent()){
+						resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_EXIST_IN_DB;
+					}
+
+			break;
+
+			case "revoke_employee":
+
+				EmployerActionReq revReq = (EmployerActionReq)obj;
+
+				//Employer who plan to revoke employee account
+				//1. Pass employerAction method
+				resultCode = employerAction(revReq.getEmployerId());
+
+				//2. Check if employee exist in database
+				if(resultCode == null){
+					employee = empAccMapper.findById(revReq.getEmployeeId());
+					if(employee == null) {
+						resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_NOT_FOUND;
+					}
 				}
 				break;
 
