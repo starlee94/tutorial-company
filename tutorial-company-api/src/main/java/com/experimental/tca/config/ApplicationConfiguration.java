@@ -2,7 +2,6 @@ package com.experimental.tca.config;
 
 import com.experimental.tca.mapper.EmpAccMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,11 +15,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 
+/**
+ * @author star.lee
+ */
 @Configuration
+@RequiredArgsConstructor
 public class ApplicationConfiguration {
 
-	@Autowired
-	private EmpAccMapper empAccMapper;
+	private final EmpAccMapper empAccMapper;
 
 	@Bean
 	public UserDetailsService userDetailsService() {
@@ -43,9 +45,9 @@ public class ApplicationConfiguration {
 
 	@Bean
 	public PasswordEncoder passworEncoder() {
-		
+
 		return new BCryptPasswordEncoder();
 	}
-		
-	
+
+
 }

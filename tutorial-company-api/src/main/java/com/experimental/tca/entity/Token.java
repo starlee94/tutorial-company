@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+/**
+ * @author star.lee
+ */
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,8 +21,10 @@ public class Token {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	private String token;
-	
+
+	@Column(name="token")
+	private String tokenString;
+
 	@Enumerated(EnumType.STRING)
 	private TokenType tokenType;
 	
