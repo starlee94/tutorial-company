@@ -13,8 +13,9 @@ import com.experimental.tca.entity.Token;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
+import com.experimental.tca.util.AuditStream;
+import com.experimental.tca.util.LogStream;
 import io.jsonwebtoken.ExpiredJwtException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,7 +31,6 @@ import lombok.RequiredArgsConstructor;
  * @author star.lee
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class AuthenticationService {
 
@@ -56,16 +56,16 @@ public class AuthenticationService {
 
 	public Response employeeLogin(EmployeeLoginReq request) {
 
-		log.info(Common.LOG_START.getMsg());
-		log.info("employeeLogin --> (username:\"{}\", password:\"{}\")", request.getUsername(), request.getPassword());
+		LogStream.start();
+		LogStream.body("employeeLogin ---> " + request.toString());
 		EmpAcc empAcc =new EmpAcc();
-		AuditLog auditLog = new AuditLog();
+		AuditLog auditLog;
 		String token;
 
 		ResultCode resultCode = verification.verifyEmployee(request, "employee_login");
 
-		String[] data = null;
-		if (resultCode == null) {
+		String[] data;
+		if (null == resultCode) {
 			data = new String[1];
 			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 			try {
@@ -75,52 +75,46 @@ public class AuthenticationService {
 								request.getUsername(),
 								request.getPassword())
 				);
-				empAcc = empAccMapper.findByUsername(request.getUsername()).orElse(new EmpAcc());
-				token = jwtService.generateToken(new HashMap<>(), request.getUsername());
-				for (Token t : tokenMapper.findAll()) {
-					if(jwtService.extractUsername(t.getToken()).equals(request.getUsername())) {
 
-						data[0] = token;
-						break;
-					}
-				}
+				empAcc = empAccMapper.findByUsername(request.getUsername()).orElse(new EmpAcc());
+
+				token = jwtService.generateToken(new HashMap<>(), request.getUsername());
+
 				data[0] = token;
 
-				auditLog.setDt_timestamp(currentTime);
-				auditLog.setVc_audit_descript(String.format("%s %s logged in.",Common.EMPLOYEE.getMsg(), request.getUsername()));
-				auditLog.setI_emp_id(empAcc.getId());
-
-				auditLogMapper.save(auditLog);
+				auditLog = AuditStream.audit(currentTime,
+						          String.format("%s %s logged in.",Common.EMPLOYEE.getMsg(),
+								  request.getUsername()),empAcc.getId(),
+								  auditLogMapper);
 
 				revokeAllUserTokens(empAcc.getId());
 				saveUserToken(empAcc, token);
 
-				log.info("{}", auditLog.getVc_audit_descript());
+				LogStream.body(auditLog.getDescription());
+				LogStream.body(token);
 
-				log.info(Common.LOG_END.getMsg());
+				LogStream.end();
 
 			}
 			catch (ExpiredJwtException e)
 			{
 				recursionTokenRemoval(empAcc);
-				log.info("Token expired removed.");
-				log.info(Common.LOG_END.getMsg());
-				employeeLogin(request);
+				LogStream.body("Token expired removed.");
+				LogStream.end();
+				return employeeLogin(request);
 			}
 			catch (BadCredentialsException e){
-				resultCode = ResultCode.MSG_SYSTEM_EMPLOYEE_INVALID_PASSWORD;
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_EMPLOYEE_INVALID_PASSWORD);
 			}
 			catch(Exception e)
 			{
-				resultCode = ResultCode.MSG_SYSTEM_ERROR;
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			}
 		}else{
 			data = null;
-			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+			LogStream.error(resultCode);
 		}
 		return Response.builder()
 				.infoId(resultCode.getCode())
@@ -129,7 +123,6 @@ public class AuthenticationService {
 				.build();
 	}
 
-	
 	private void revokeAllUserTokens(Integer id) {
 		List<Token> validUserTokens = tokenMapper.findAllValidTokenByUser(id);
 		if(validUserTokens.isEmpty()) {
@@ -142,7 +135,7 @@ public class AuthenticationService {
 	private void saveUserToken(EmpAcc savedAcc, String jwtToken) {
 		Token token = Token.builder()
 						 .empAcc(savedAcc)
-				   		 .token(jwtToken)
+				   		 .tokenString(jwtToken)
 				   		 .tokenType(TokenType.BEARER)
 				   		 .revoked(false)
 				   		 .build();

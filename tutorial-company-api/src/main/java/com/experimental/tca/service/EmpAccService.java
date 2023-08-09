@@ -12,8 +12,10 @@ import com.experimental.tca.domain.req.EmployerActionReq;
 import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
-import lombok.extern.slf4j.Slf4j;
+import com.experimental.tca.util.AuditStream;
+import com.experimental.tca.util.LogStream;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.experimental.tca.domain.res.Response;
@@ -21,11 +23,11 @@ import com.experimental.tca.util.Verification;
 
 import lombok.RequiredArgsConstructor;
 
+
 /**
  * @author star.lee
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class EmpAccService {
 
@@ -48,8 +50,8 @@ public class EmpAccService {
 
 	public Response registerEmployee(RegisterEmployeeReq request) {
 
-		log.info(Common.LOG_START.getMsg());
-		log.info("registerEmployee --> (employerId:{}, username:\"{}\")", request.getEmployerId(), request.getUsername());
+		LogStream.start();
+		LogStream.body("registerEmployee ---> " + request.toString());
 		resultCode = verification.verifyEmployee(request, "register_employee");
 		data = new Object[1];
 
@@ -60,25 +62,25 @@ public class EmpAccService {
 
 				data[0] = String.format("%s %s created.", Common.EMPLOYEE.getMsg(), request.getUsername());
 
-				auditLog.setDt_timestamp(currentTime);
-				auditLog.setVc_audit_descript(data[0].toString());
-				auditLog.setI_emp_id(request.getEmployerId());
+				AuditStream.audit(currentTime,
+								  data[0].toString(),
+								  request.getEmployerId(),
+								  auditLogMapper);
 
-				auditLogMapper.save(auditLog);
-				log.info("{}", data[0]);
+				LogStream.body(data[0].toString());
+
+				LogStream.end();
 
 			}catch (Exception e){
-				resultCode = ResultCode.MSG_SYSTEM_ERROR;
+
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			}
 		}
 		else{
 			data = null;
-			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+			LogStream.error(resultCode);
 		}
-
-		log.info(Common.LOG_END.getMsg());
 		return Response.builder()
 				.infoId(resultCode.getCode())
 				.infoMsg(resultCode.getMessage())
@@ -88,28 +90,28 @@ public class EmpAccService {
 
     public Response viewAllEmployee(Integer id) {
 
-		log.info(Common.LOG_START.getMsg());
-		log.info("viewAllEmployee --> (id:{})", id);
+		LogStream.start();
+		LogStream.body("viewAllEmployee ---> Id=" + id);
 		List<Employee> employees = empAccMapper.findAll();
 		resultCode = verification.verifyEmployee(id, "elevated_employee_action");
 		data = new Object[1];
 
 		if (resultCode == null) {
 			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
-			log.info("Employee {} called get all employees.", empAccMapper.findById(id).getUsername());
+			LogStream.body(String.format("Employee %s called get all employees.",empAccMapper.findById(id).getUsername()));
 			try {data[0] = employees;}
 			catch (Exception e) {
-				resultCode = ResultCode.MSG_SYSTEM_ERROR;
+
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			}
+
+			LogStream.end();
 		}
 		else {
 			data = null;
-			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+			LogStream.error(resultCode);
 		}
-
-		log.info(Common.LOG_END.getMsg());
 		return Response.builder()
 				.infoId(resultCode.getCode())
 				.infoMsg(resultCode.getMessage())
@@ -119,8 +121,9 @@ public class EmpAccService {
 
 	public Response revokeEmployee(EmployerActionReq request) {
 
-		log.info(Common.LOG_START.getMsg());
-		log.info("revokeEmployee --> (employerId:{}, employeeId:{})", request.getEmployerId(), request.getEmployeeId());
+		LogStream.start();
+		LogStream.body("revokeEmployee ---> " + request.toString());
+
 		resultCode = verification.verifyEmployee(request, "revoke_employee");
 		data = new Object[1];
 
@@ -132,26 +135,25 @@ public class EmpAccService {
 				empAccMapper.updateStatusIdById(employee.getId(), 0);
 				data[0] = String.format("%s %s was deactivated.", Common.EMPLOYEE.getMsg(), employee.getUsername());
 
-				auditLog.setDt_timestamp(currentTime);
-				auditLog.setVc_audit_descript(data[0].toString());
-				auditLog.setI_emp_id(request.getEmployerId());
+				AuditStream.audit(currentTime,
+								  data[0].toString(),
+								  request.getEmployerId(),
+								  auditLogMapper);
 
-				auditLogMapper.save(auditLog);
+				LogStream.body(data[0].toString());
 
-				log.info("{}", data[0].toString());
+				LogStream.end();
 
 			}catch(Exception e) {
-				resultCode = ResultCode.MSG_SYSTEM_ERROR;
+
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			}
 		}
 		else {
 			data = null;
-			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+			LogStream.error(resultCode);
 		}
-
-		log.info(Common.LOG_END.getMsg());
 		return Response.builder()
 				.infoId(resultCode.getCode())
 				.infoMsg(resultCode.getMessage())
@@ -161,38 +163,48 @@ public class EmpAccService {
 
 	public Response updateEmployee(EmployeeActionReq request){
 
-		log.info(Common.LOG_START.getMsg());
-		log.info("updateEmployee --> (id:{}, action:\"{}\", data:\"{}\")", request.getId(), request.getAction(), request.getData());
-		resultCode = verification.verifyEmployee(request, "activate_employee");
+		LogStream.start();
+		LogStream.body("updateEmployee ---> " + request.toString());
+
+		resultCode = verification.verifyEmployee(request, "employee_action");
 		data = new Object[1];
 
 		if (resultCode == null) {
 			resultCode = ResultCode.MSG_SYSTEM_SUCCESS;
 			try {
 				if ("PWD".equals(request.getAction())) {
-					empAccMapper.updatePasswordById(request.getId(), request.getData());
-					empAccMapper.updateStatusIdById(request.getId(), 1);
-					data[0] = Common.EMPLOYEE.getMsg() + " " + empAccMapper.findById(request.getId()).getUsername() + " activated.";
+					BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+					String pwd = passwordEncoder.encode(request.getData());
+
+					empAccMapper.updatePasswordById(request.getId(), pwd);
+
+					Integer status = empAccMapper.findById(request.getId()).getStatus();
+					if(status == 0) {
+						empAccMapper.updateStatusIdById(request.getId(), 1);
+						data[0] = Common.EMPLOYEE.getMsg() + " " + empAccMapper.findById(request.getId()).getUsername() + " activated.";
+					}
+					data[0] = Common.EMPLOYEE.getMsg() + " " + empAccMapper.findById(request.getId()).getUsername() + " password updated.";
 				}
 
-				auditLog.setDt_timestamp(currentTime);
-				auditLog.setVc_audit_descript(data[0].toString());
-				auditLog.setI_emp_id(request.getId());
+				auditLog.setTimeStamp(currentTime);
+				auditLog.setDescription(data[0].toString());
+				auditLog.setEmployeeId(request.getId());
 
 				auditLogMapper.save(auditLog);
-				log.info("{}", data[0].toString());
+				LogStream.body(data[0].toString());
+
+				LogStream.end();
 			}
 			catch (Exception e) {
-				resultCode = ResultCode.MSG_SYSTEM_ERROR;
+
 				e.printStackTrace();
-				log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+				LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			}
 		}
 		else {
 			data = null;
-			log.error(String.format(Common.ERROR_MSG.getMsg(), resultCode.getCode(), resultCode.getMessage()));
+			LogStream.error(resultCode);
 		}
-		log.info(Common.LOG_END.getMsg());
 		return Response.builder()
 				.infoId(resultCode.getCode())
 				.infoMsg(resultCode.getMessage())

@@ -1,12 +1,13 @@
 package com.experimental.tca.service;
 
 import com.experimental.tca.constant.Common;
+import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
-import com.experimental.tca.entity.AuditLog;
 import com.experimental.tca.entity.EmpAcc;
-import lombok.extern.slf4j.Slf4j;
+import com.experimental.tca.util.AuditStream;
+import com.experimental.tca.util.LogStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
@@ -23,13 +24,13 @@ import java.util.Date;
  * @author star.lee
  */
 @Service
-@Slf4j
 @RequiredArgsConstructor
 public class LogoutService implements LogoutHandler{
 
 	@Autowired
 	private final TokenMapper tokenMapper;
 
+	@Autowired
 	private final JwtService jwtService;
 
 	@Autowired
@@ -42,11 +43,15 @@ public class LogoutService implements LogoutHandler{
 
 	@Override
 	public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
+
+		LogStream.start();
 		final String authHeader = request.getHeader("Authorization");
 		final String jwt;
-		AuditLog auditLog = new AuditLog();
+
+		LogStream.body("logout --> header=" + authHeader);
 
 		if(authHeader == null || !authHeader.startsWith("Bearer ")) {
+			LogStream.error(ResultCode.MSG_SYSTEM_ERROR);
 			return;
 		}
 		
@@ -56,11 +61,12 @@ public class LogoutService implements LogoutHandler{
 		String username = jwtService.extractUsername(jwt);
 		String msg = String.format("%s %s logged out.", Common.EMPLOYEE.getMsg(), username);
 
-		auditLog.setDt_timestamp(currentTime);
-		auditLog.setVc_audit_descript(msg);
-		auditLog.setI_emp_id(empAccMapper.findByUsername(username).orElse(new EmpAcc()).getId());
+		AuditStream.audit(currentTime,
+						  msg,
+						  empAccMapper.findByUsername(username).orElse(new EmpAcc()).getId(),
+						  auditLogMapper);
 
-		auditLogMapper.save(auditLog);
-		log.info("{}", msg);
+		LogStream.body(msg);
+		LogStream.end();
 	}
 }
