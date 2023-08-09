@@ -14,7 +14,7 @@ public interface TokenMapper {
 
     @Result(property = "id", column = "id")
     @Result(property = "revoked", column = "revoked")
-    @Result(property = "token", column = "token")
+    @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
     @Select("select * from Token")
@@ -23,7 +23,7 @@ public interface TokenMapper {
 
     @Result(property = "id", column = "id")
     @Result(property = "revoked", column = "revoked")
-    @Result(property = "token", column = "token")
+    @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
     @Select("select * from Token where i_emp_id =#{id} and revoked=0")
@@ -31,7 +31,7 @@ public interface TokenMapper {
 
     @Result(property = "id", column = "id")
     @Result(property = "revoked", column = "revoked")
-    @Result(property = "token", column = "token")
+    @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
     @Select("select * from Token where token=#{token}")
@@ -40,13 +40,13 @@ public interface TokenMapper {
     @Update("update Token set revoked=1")
     void revokeAll();
 
-    @Insert("insert into Token(revoked,token,token_type,i_emp_id) values(#{revoked}, #{token}, #{tokenType}, #{empAcc.id})")
+    @Insert("insert into Token(revoked,token,token_type,i_emp_id) values(#{revoked}, #{tokenString}, #{tokenType}, #{empAcc.id})")
     void save(Token token);
 
-    @Delete("delete from Token where token=#{token}")
+    @Delete("delete from Token where token=#{tokenString}")
     void delete(Token token);
 
-    @Update("update Token set revoked=1 where token=#{token}")
+    @Update("update Token set revoked=1 where token=#{tokenString}")
     void revokeToken(Token token);
 
 
