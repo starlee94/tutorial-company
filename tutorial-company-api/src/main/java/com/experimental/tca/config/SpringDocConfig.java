@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springdoc.core.GroupedOpenApi;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -18,4 +20,23 @@ import org.springframework.context.annotation.Configuration;
         scheme = "bearer"
 )
 public class SpringDocConfig {
+
+    @Bean
+    public GroupedOpenApi apiVer1(){
+        return buildApi("v1");
+    }
+
+    @Bean
+    public GroupedOpenApi apiVer2(){
+        return buildApi("v2");
+    }
+
+    private GroupedOpenApi buildApi(String version){
+        return GroupedOpenApi.builder()
+                .addOpenApiCustomiser(openApi -> openApi.getInfo().setVersion(version))
+                .group(String.format("API-%s", version))
+                .pathsToMatch(String.format("/api/%s/**", version))
+                .displayName(String.format("API %s", version))
+                .build();
+    }
 }
