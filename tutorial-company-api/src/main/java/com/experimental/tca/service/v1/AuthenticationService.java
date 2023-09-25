@@ -1,4 +1,4 @@
-package com.experimental.tca.service;
+package com.experimental.tca.service.v1;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -6,13 +6,14 @@ import java.util.*;
 import com.experimental.tca.constant.Common;
 import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.domain.req.EmployeeLoginReq;
-import com.experimental.tca.entity.AuditLog;
+import com.experimental.tca.entity.v1.AuditLog;
 import com.experimental.tca.constant.TokenType;
-import com.experimental.tca.entity.EmpAcc;
-import com.experimental.tca.entity.Token;
+import com.experimental.tca.entity.v1.EmpAcc;
+import com.experimental.tca.entity.v1.Token;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
+import com.experimental.tca.service.JwtService;
 import com.experimental.tca.util.AuditStream;
 import com.experimental.tca.util.LogStream;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -54,7 +55,7 @@ public class AuthenticationService {
 
 	private final Timestamp currentTime = new Timestamp(new Date().getTime());
 
-	public Response employeeLogin(EmployeeLoginReq request) {
+	public Response<Object> employeeLogin(EmployeeLoginReq request) {
 
 		LogStream.start();
 		LogStream.body("employeeLogin ---> " + request.toString());

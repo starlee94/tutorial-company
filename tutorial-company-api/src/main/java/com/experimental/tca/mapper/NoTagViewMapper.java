@@ -1,6 +1,6 @@
 package com.experimental.tca.mapper;
 
-import com.experimental.tca.entity.NoTagView;
+import com.experimental.tca.entity.v1.NoTagView;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 

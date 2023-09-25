@@ -1,11 +1,12 @@
-package com.experimental.tca.service;
+package com.experimental.tca.service.v1;
 
 import com.experimental.tca.constant.Common;
 import com.experimental.tca.constant.ResultCode;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.mapper.TokenMapper;
-import com.experimental.tca.entity.EmpAcc;
+import com.experimental.tca.entity.v1.EmpAcc;
+import com.experimental.tca.service.JwtService;
 import com.experimental.tca.util.AuditStream;
 import com.experimental.tca.util.LogStream;
 import org.springframework.beans.factory.annotation.Autowired;

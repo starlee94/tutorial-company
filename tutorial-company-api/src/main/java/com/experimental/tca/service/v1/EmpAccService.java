@@ -1,4 +1,4 @@
-package com.experimental.tca.service;
+package com.experimental.tca.service.v1;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -9,7 +9,7 @@ import com.experimental.tca.domain.Employee;
 import com.experimental.tca.domain.req.EmployeeActionReq;
 import com.experimental.tca.domain.req.RegisterEmployeeReq;
 import com.experimental.tca.domain.req.EmployerActionReq;
-import com.experimental.tca.entity.AuditLog;
+import com.experimental.tca.entity.v1.AuditLog;
 import com.experimental.tca.mapper.AuditLogMapper;
 import com.experimental.tca.mapper.EmpAccMapper;
 import com.experimental.tca.util.AuditStream;
@@ -48,7 +48,7 @@ public class EmpAccService {
 
 	private Object[] data;
 
-	public Response registerEmployee(RegisterEmployeeReq request) {
+	public Response<Object> registerEmployee(RegisterEmployeeReq request) {
 
 		LogStream.start();
 		LogStream.body("registerEmployee ---> " + request.toString());
@@ -88,7 +88,7 @@ public class EmpAccService {
 				.build();
 	}
 
-    public Response viewAllEmployee(Integer id) {
+    public Response<Object> viewAllEmployee(Integer id) {
 
 		LogStream.start();
 		LogStream.body("viewAllEmployee ---> Id=" + id);
@@ -119,7 +119,7 @@ public class EmpAccService {
 				.build();
     }
 
-	public Response revokeEmployee(EmployerActionReq request) {
+	public Response<Object> revokeEmployee(EmployerActionReq request) {
 
 		LogStream.start();
 		LogStream.body("revokeEmployee ---> " + request.toString());
@@ -161,7 +161,7 @@ public class EmpAccService {
 				.build();
 	}
 
-	public Response updateEmployee(EmployeeActionReq request){
+	public Response<Object> updateEmployee(EmployeeActionReq request){
 
 		LogStream.start();
 		LogStream.body("updateEmployee ---> " + request.toString());

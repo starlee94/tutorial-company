@@ -1,6 +1,6 @@
 package com.experimental.tca.util;
 
-import com.experimental.tca.entity.AuditLog;
+import com.experimental.tca.entity.v1.AuditLog;
 import com.experimental.tca.mapper.AuditLogMapper;
 
 import java.sql.Timestamp;

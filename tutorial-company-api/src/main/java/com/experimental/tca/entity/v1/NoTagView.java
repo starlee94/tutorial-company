@@ -1,4 +1,4 @@
-package com.experimental.tca.entity;
+package com.experimental.tca.entity.v1;
 
 import java.io.Serializable;
 
@@ -13,7 +13,6 @@ import lombok.Data;
 /**
  * @author star.lee
  */
-@SuppressWarnings("serial")
 @Data
 @Entity
 @Immutable
