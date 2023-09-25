@@ -21,8 +21,7 @@ import static com.experimental.tca.constant.SecurityEnum.SECRET_KEY;
  */
 @Service
 public class JwtService {
-	private final Date expiration = new Date(System.currentTimeMillis() + 1000L * 60 * Integer.parseInt(MINUTES.getData()));
-		
+
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
 	}
@@ -40,7 +39,7 @@ public class JwtService {
 				   .setClaims(extractClaims)
 				   .setSubject(username)
 				   .setIssuedAt(new Date(System.currentTimeMillis()))
-				   .setExpiration(expiration)
+				   .setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * Integer.parseInt(MINUTES.getData())))
 				   .signWith(getSignInKey(), SignatureAlgorithm.HS256)
 				   .compact();
 	}
