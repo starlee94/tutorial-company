@@ -35,7 +35,7 @@ public class SpringDocConfig {
         return GroupedOpenApi.builder()
                 .addOpenApiCustomiser(openApi -> openApi.getInfo().setVersion(version))
                 .group(String.format("API-%s", version))
-                .pathsToMatch(String.format("/api/%s/**", version))
+                .pathsToMatch(String.format("/api/%s/**", version),"/api/v0/**")
                 .displayName(String.format("API %s", version))
                 .build();
     }

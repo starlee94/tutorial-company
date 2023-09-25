@@ -1,4 +1,4 @@
-package com.experimental.tca.entity;
+package com.experimental.tca.entity.v1;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
