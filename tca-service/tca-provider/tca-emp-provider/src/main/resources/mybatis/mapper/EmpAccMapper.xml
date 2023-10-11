@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tca.emp.mapper.EmpAccMapper">
+    <resultMap id="BaseResultMap" type="com.tca.emp.api.vo.EmployeeDetail">
+        <id column="i_emp_id" jdbcType="INTEGER" property="id"/>
+        <result column="vc_emp_uname" jdbcType="VARCHAR" property="name"/>
+        <result column="i_emp_status" jdbcType="INTEGER" property="status"/>
+        <result column="i_tag_id" jdbcType="INTEGER" property="status"/>
+    </resultMap>
+    <sql id="BaseColumnList">
+        i_emp_id, vc_emp_uname, i_emp_status, i_tag_id
+    </sql>
+
+    <update id="clearToken" parameterType="java.lang.String">
+        UPDATE emp_acc
+        SET vc_emp_token = NULL
+        WHERE vc_emp_token = #{token, jdbcType=VARCHAR}
+    </update>
+
+    <select id="verifyToken" resultType="java.lang.String">
+        SELECT vc_emp_token
+        FROM emp_acc
+        WHERE
+        vc_emp_token = #{token, jdbcType=VARCHAR}
+    </select>
+
+    <select id="findEmpByUsername" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="BaseColumnList"/>
+        FROM  emp_acc
+        WHERE
+        vc_emp_uname = #{name, jdbcType=VARCHAR}
+    </select>
+
+</mapper>

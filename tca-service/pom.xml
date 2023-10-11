@@ -6,9 +6,17 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>tca-service</name>
+
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>2.0.8.RELEASE</version>
+  </parent>
+
   <modules>
-    <module>tca-auth-provider</module>
     <module>tca-commons</module>
     <module>tca-api</module>
+      <module>tca-provider</module>
   </modules>
+
 </project>

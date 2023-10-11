@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tca.core.mapper.TokenMapper">
+
+    <update id="clearToken">
+        UPDATE emp_acc
+        SET vc_emp_token = NULL
+        WHERE vc_emp_token = #{token, jdbcType=VARCHAR}
+    </update>
+
+    <select id="verifyToken" resultType="java.lang.String">
+        SELECT vc_emp_token
+        FROM emp_acc
+        WHERE vc_emp_token = #{token, jdbcType=VARCHAR}
+    </select>
+</mapper>

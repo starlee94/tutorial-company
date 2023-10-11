@@ -9,17 +9,4 @@
   <artifactId>tca-auth-api</artifactId>
   <name>tca-auth-api</name>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.28</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <version>3.1.1</version>
-    </dependency>
-  </dependencies>
 </project>

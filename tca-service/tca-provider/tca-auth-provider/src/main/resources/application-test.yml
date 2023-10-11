@@ -1,0 +1,18 @@
+server:
+  port: 10002
+
+spring:
+  application:
+    name: tca-auth
+
+  profiles:
+    include: ${spring.profiles.active}
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/tutorialdb
+    username: star
+    password: Pa$sw0rd
+
+service:
+  emp:
+    url: http://127.0.0.1:10001
