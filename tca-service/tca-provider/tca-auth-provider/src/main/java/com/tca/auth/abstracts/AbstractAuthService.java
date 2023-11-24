@@ -1,12 +1,23 @@
 package com.tca.auth.abstracts;
 
-import com.tca.utils.DynamicDataSource;
-import com.tca.utils.Response;
-import com.tca.utils.abstracts.AbstractWebService;
+import com.tca.auth.mapper.AuthMapper;
+import com.tca.core.DynamicDataSource;
+import com.tca.core.Response;
+import com.tca.core.constant.abstracts.AbstractWebService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 
+/**
+ * @author star.lee
+ */
 public abstract class AbstractAuthService<E extends Object, T extends Object> extends AbstractWebService<E, T> {
+
+    //------------Mappers------------
+    @Autowired
+    protected AuthMapper authMapper;
+
+    //------------Services------------
+//    @Autowired
+//    protected JwtService jwtService;
 
     @Override
     public Response<T> handle(E reqParameter) throws Exception {

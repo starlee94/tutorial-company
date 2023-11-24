@@ -12,7 +12,10 @@ spring:
     url: jdbc:mysql://localhost:3306/tutorialdb
     username: star
     password: Pa$sw0rd
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
 service:
   emp:
     url: http://127.0.0.1:10001
+  auth:
+    url: http://127.0.0.1:10002

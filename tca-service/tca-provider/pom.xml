@@ -24,6 +24,18 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
         <!--tca-api-->
         <dependency>
             <groupId>com.tca</groupId>
