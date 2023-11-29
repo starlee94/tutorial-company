@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.exception.FeignClientException;
 import com.tca.core.Response;
-import com.tca.core.config.FeignHolder;
+import com.tca.core.config.holder.FeignHolder;
 import feign.FeignException;
 import feign.RequestTemplate;
 import feign.codec.DecodeException;

@@ -47,4 +47,4 @@ data:
     
     
     # mapper-dao存放的包目录
-    mybatis_dao_scann_packages: com.tca.auth.mapper
+    mybatis_dao_scan_packages: com.tca.auth.mapper

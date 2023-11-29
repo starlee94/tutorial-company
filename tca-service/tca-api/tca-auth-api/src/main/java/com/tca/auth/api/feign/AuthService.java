@@ -3,6 +3,7 @@ package com.tca.auth.api.feign;
 import com.tca.core.service.CommonService;
 import com.tca.utils.constant.interfaces.ServiceName;
 import org.springframework.cloud.openfeign.FeignClient;
+
 /**
  * @author star.lee
  */

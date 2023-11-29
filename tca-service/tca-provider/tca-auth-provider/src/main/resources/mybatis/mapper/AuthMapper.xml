@@ -22,7 +22,7 @@
         vc_emp_uname = #{username, jdbcType=VARCHAR}
     </select>
 
-    <select id="verifyToken" resultType="java.lang.String">
+    <select id="verifyToken" parameterType="java.lang.String" resultType="java.lang.String">
         SELECT vc_token
         FROM emp_acc
         WHERE

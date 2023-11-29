@@ -1,5 +1,6 @@
 package com.tca.auth.mapper;
 
+import com.tca.core.entity.EmpAcc;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -11,7 +12,7 @@ import java.util.Optional;
 @Mapper
 public interface AuthMapper {
 
-//    Optional<EmpAcc> findByUsername(String username);
+    Optional<EmpAcc> findByUsername(String username);
 
     Optional<String> verifyToken(@Param("token") String token);
 

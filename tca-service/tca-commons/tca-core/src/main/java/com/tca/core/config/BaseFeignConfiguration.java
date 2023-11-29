@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Bean;
 import java.util.ArrayList;
 import java.util.List;
 
-final class BaseFeignConfig {
+final class BaseFeignConfiguration {
     @Bean
     public ConfigProperties globalConfigProperties(){
         ConfigProperties configProperties = new ConfigProperties();

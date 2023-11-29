@@ -1,6 +1,6 @@
 package com.tca.core.config.decoder;
 
-import com.tca.core.config.FeignHolder;
+import com.tca.core.config.holder.FeignHolder;
 import com.tca.core.exception.FeignClientException;
 import feign.RequestTemplate;
 import feign.Response;

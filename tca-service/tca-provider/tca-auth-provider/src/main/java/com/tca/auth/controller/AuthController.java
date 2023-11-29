@@ -22,15 +22,21 @@ public class AuthController extends AbstractWebController {
     AuthService authService;
 
     @GetMapping("/test")
-    public Response<Void> testAuth() throws Exception{ return authService.test(); }
+    public Response<Void> testAuth() { return authService.test(); }
 //
 //    @GetMapping("/get/username")
 //    public Response<Optional<EmpAcc>> findByUsername(String username) throws Exception { return authService.findByUsername(username); }
 
     @GetMapping("/token/verify")
-    public Response<Optional<String>> verifyToken (@RequestParam("token") String token) throws Exception { return authService.verifyToken(token); }
+    public Response<Optional<String>> verifyToken(@RequestParam("token") String token) throws Exception {
+        return authService.verifyToken(token);
+    }
 
     @GetMapping("/token/clear")
-    public Response<Void> clearToken(@RequestParam("token")String token)  throws Exception { return authService.clearToken(token); };
+    public Response<Void> clearToken(@RequestParam("token") String token) throws Exception {
+        return authService.clearToken(token);
+    }
+
+    ;
 
 }

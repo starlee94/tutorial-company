@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Bean;
  * @author star.lee
  */
 
-public class ActiveFeignConfig {
+public class ActiveFeignConfiguration {
 
 
     @Autowired

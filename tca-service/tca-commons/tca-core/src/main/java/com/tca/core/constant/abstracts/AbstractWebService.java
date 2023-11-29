@@ -1,10 +1,9 @@
 package com.tca.core.constant.abstracts;
 
 
-import com.tca.core.constant.finals.SpringBeanFactory;
 import com.tca.core.Response;
+import com.tca.core.constant.finals.SpringBeanFactory;
 import com.tca.core.constant.interfaces.BaseService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -16,10 +15,7 @@ import javax.servlet.http.HttpServletResponse;
  * @param <T> 返回体data类型
  * @author Devin.qi < devin.qi@ixsecurities.com />
  */
-@Slf4j
 public abstract class AbstractWebService<E extends Object, T extends Object> extends ProjectBase implements BaseService<E, Response<T>> {
-
-
 
     /**
      * 后续根据发展，可以在该类设置所有service共有的一些引用，如 HttpServletRequest 等。
@@ -56,7 +52,7 @@ public abstract class AbstractWebService<E extends Object, T extends Object> ext
      * @return
      */
     boolean isProxyClass(){
-        return log == null;
+        return LOG == null;
     }
 
 

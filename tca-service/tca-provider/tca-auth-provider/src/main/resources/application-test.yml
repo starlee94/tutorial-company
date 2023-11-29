@@ -9,10 +9,23 @@ spring:
     include: ${spring.profiles.active}
 
   datasource:
+    type: com.zaxxer.hikari.HikariDataSource
     url: jdbc:mysql://localhost:3306/tutorialdb
     username: star
     password: Pa$sw0rd
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sleuth:
+    web:
+      client:
+        enabled: true
+    sampler:
+      probability: 1.0
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+mybatis_dao_scan_packages: com.tca.auth.mapper
 
 service:
   emp:

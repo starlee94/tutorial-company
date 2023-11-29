@@ -2,40 +2,58 @@ package com.tca.core.constant.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.ArrayUtils;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author star.lee
  */
 @Getter
 @RequiredArgsConstructor
+@Slf4j
 public enum AddressUtil {
 
-    AUTH_SWAGGER(new String[]{
+    ADDR_SWAGGER(new String[]{
             // -- Swagger UI v2
-            "/v2/api-docs",
-            "/swagger-resources",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**",
+//            "/v2/api-docs",
+//            "/swagger-resources",
+//            "/swagger-resources/**",
+//            "/configuration/ui",
+//            "/configuration/security",
+//            "/swagger-ui.html",
+//            "/webjars/**",
             // -- Swagger UI v3 (OpenAPI)
             "/v3/api-docs/**",
             "/swagger-ui/**"
     }),
 
-    AUTH_OTHER(new String[]{
-            // other public endpoints of your API may be appended to this array
+    ADDR_AUTH(new String[]{
             "/auth/**"
     }),
 
-    AUTH_FULL(ArrayUtils.addAll(
-            AUTH_SWAGGER.getAddress(),
-            AUTH_OTHER.getAddress()))
+    ADDR_EMP(new String[]{
+            "/emp/test"
+    }),
+
+    ADDR_OTHER(new String[]{
+            // other public endpoints of your API may be appended to this array
+    })
     ;
 
 
     private final String[] address;
+
+    public static String[] fullAddress(){
+        List<String> addressList = new ArrayList<>();
+        Arrays.stream(AddressUtil.values())
+                .filter(addressUtil -> ! "ADDR_FULL".equals(addressUtil.name()))
+                .map(AddressUtil::getAddress).forEach(element ->{
+                    addressList.addAll(Arrays.asList(element));
+                });
+        return addressList.toArray(new String[0]);
+    }
 
 }

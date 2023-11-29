@@ -1,4 +1,4 @@
-package com.tca.auth;
+package com.tca.emp;
 
 import com.tca.core.config.ApplicationConfiguration;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -16,24 +16,21 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * @author star.lee
  */
-
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.tca.*.api.feign"})
 @Import(ApplicationConfiguration.class)
 @EnableTransactionManagement
 @EnableAsync
-@OpenAPIDefinition(info = @Info(title = "Auth API", version = "v1"))
+@OpenAPIDefinition(info = @Info(title = "Emp API", version = "v1"))
 @SecurityScheme(
         name = "bearerAuth",
         type = SecuritySchemeType.HTTP,
         bearerFormat = "JWT",
         scheme = "bearer"
 )
-public class TcaAuthApplication {
-
+public class TcaEmpApplication {
     public static void main(String[] args) {
-        SpringApplication.run(TcaAuthApplication.class, args);
+        SpringApplication.run(TcaEmpApplication.class, args);
     }
-
 }

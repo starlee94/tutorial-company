@@ -1,4 +1,4 @@
-package com.tca.core.config;
+package com.tca.core.config.holder;
 
 import javax.servlet.http.HttpServletRequest;
 

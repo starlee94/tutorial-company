@@ -11,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractEmpService<E extends Object, T extends Object> extends AbstractWebService<E, T> {
 
+    //------------Mappers------------
     @Autowired
     protected EmpAccMapper empAccMapper;
+
+    //------------Services------------
 
     @Override
     public Response<T> handle(E reqParameter) throws Exception {

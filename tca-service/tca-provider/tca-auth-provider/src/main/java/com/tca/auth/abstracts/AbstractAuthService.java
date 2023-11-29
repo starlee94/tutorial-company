@@ -4,6 +4,7 @@ import com.tca.auth.mapper.AuthMapper;
 import com.tca.core.DynamicDataSource;
 import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebService;
+import com.tca.core.service.JwtService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -16,8 +17,8 @@ public abstract class AbstractAuthService<E extends Object, T extends Object> ex
     protected AuthMapper authMapper;
 
     //------------Services------------
-//    @Autowired
-//    protected JwtService jwtService;
+    @Autowired
+    protected JwtService jwtService;
 
     @Override
     public Response<T> handle(E reqParameter) throws Exception {

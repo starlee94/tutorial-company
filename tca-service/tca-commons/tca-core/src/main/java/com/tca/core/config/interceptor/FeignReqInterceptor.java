@@ -1,6 +1,6 @@
 package com.tca.core.config.interceptor;
 
-import com.tca.core.config.RequestHolder;
+import com.tca.core.config.holder.RequestHolder;
 import com.tca.core.constant.interfaces.ProjectConfigConstant;
 import feign.Request;
 import feign.RequestInterceptor;
@@ -19,7 +19,7 @@ public class FeignReqInterceptor implements RequestInterceptor {
     private static final String HEADER_TRACE_ID = "trace";
 
     public FeignReqInterceptor() {
-        logger.info("-----------------------------------Feign interceptor {} initialization completed! -----------------------------------", this.getClass().getName());
+        logger.info("----------------------------------- {} initialization completed! -----------------------------------", this.getClass().getSimpleName());
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.tca.core.config.filter;
 
-import com.tca.core.config.RequestHolder;
+import com.tca.core.config.holder.RequestHolder;
 import com.tca.core.service.CommonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,8 @@ public class AuthSignatureFilter implements Filter, Ordered {
     private CommonService commonService;
 
     @Override
-    public void init(FilterConfig filterConfig) throws ServletException { }
+    public void init(FilterConfig filterConfig) throws ServletException {
+    }
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
@@ -37,9 +38,9 @@ public class AuthSignatureFilter implements Filter, Ordered {
             HttpServletResponse response = (HttpServletResponse) servletResponse;
             String uri = request.getRequestURI();
             //登陆和退出放开
-            log.info("请求url: {}", uri);
+            log.info("Request url: {}", uri);
             filterChain.doFilter(servletRequest, servletResponse);
-            log.info("Verify Token result: {}", commonService.verifyToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZW8xIiwiaWF0IjoxNzAwNzI1NDk2LCJleHAiOjE3MDA3MzI2OTZ9.K_YAHAKjPlXkB_1IiC_l9hdC8vwvYMhNbU8RSGZ1BqI").isPresent());
+//            log.info("Verify Token result: {}", commonService.verifyToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjZW8xIiwiaWF0IjoxNzAwNzI1NDk2LCJleHAiOjE3MDA3MzI2OTZ9.K_YAHAKjPlXkB_1IiC_l9hdC8vwvYMhNbU8RSGZ1BqI").isPresent());
 
             // 如果是服务间的调用，那么直接放开
 //            String loginSign = request.getHeader(ProjectConfigConstant.INNER_REQ_HEADER);

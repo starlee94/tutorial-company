@@ -1,12 +1,18 @@
 package com.tca.core.constant.abstracts;
 
 import com.google.gson.Gson;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+
 
 /**
  * 项目顶级父类，公共限制
  * @author Devin.qi < devin.qi@ixsecurities.com />
  */
-abstract class ProjectBase {
+@Slf4j
+public abstract class ProjectBase {
+
+    protected Logger LOG = log;
 
     /**
      * 序列化
