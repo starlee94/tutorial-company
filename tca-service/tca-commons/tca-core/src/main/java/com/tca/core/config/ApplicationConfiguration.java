@@ -1,5 +1,6 @@
 package com.tca.core.config;
 
+import com.tca.core.config.feign.ActiveFeignConfiguration;
 import com.tca.core.constant.finals.SpringBeanFactory;
 import com.tca.core.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import javax.annotation.PostConstruct;
  */
 
 @Configuration
-@Import({ActiveFeignConfiguration.class, SecurityConfiguration.class})
+@Import({ActiveFeignConfiguration.class, SecurityConfiguration.class, HikariLoader.class})
 @Slf4j
 public class ApplicationConfiguration {
 

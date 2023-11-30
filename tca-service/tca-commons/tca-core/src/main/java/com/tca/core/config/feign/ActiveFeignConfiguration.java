@@ -1,4 +1,4 @@
-package com.tca.core.config;
+package com.tca.core.config.feign;
 
 import com.tca.core.config.decoder.CustomDecoder;
 import com.tca.core.config.decoder.CustomErrorDecoder;
@@ -11,13 +11,13 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cloud.openfeign.support.ResponseEntityDecoder;
 import org.springframework.cloud.openfeign.support.SpringDecoder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * @author star.lee
  */
-
+@Configuration
 public class ActiveFeignConfiguration {
-
 
     @Autowired
     private ObjectFactory<HttpMessageConverters> messageConverters;
@@ -38,13 +38,12 @@ public class ActiveFeignConfiguration {
 
     /**
      * feign请求拦截器，用于传递请求参数
-     *
      * @return
      */
     @Bean
     @ConditionalOnMissingBean(FeignReqInterceptor.class)
-    public FeignReqInterceptor feignReqInterceptor() {
-        FeignReqInterceptor feignReqInterceptor = new FeignReqInterceptor();
-        return feignReqInterceptor;
+    public FeignReqInterceptor feignReqInterceptor(){
+        return new FeignReqInterceptor();
     }
+
 }
