@@ -2,6 +2,7 @@ package com.tca.core.config;
 
 import com.tca.core.config.feign.ActiveFeignConfiguration;
 import com.tca.core.constant.finals.SpringBeanFactory;
+import com.tca.core.service.AuthEmpService;
 import com.tca.core.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,6 @@ public class ApplicationConfiguration {
     private String mybatisDaoScanPackages;
 
 
-
     @Autowired
     private AuthenticationConfiguration authenticationConfiguration;
 
@@ -41,6 +41,9 @@ public class ApplicationConfiguration {
     public AuthenticationManager authenticationManager() throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+    @Bean
+    public AuthEmpService authEmpService() throws Exception { return new AuthEmpService(); }
 
     @Bean
     public JwtService jwtService() {

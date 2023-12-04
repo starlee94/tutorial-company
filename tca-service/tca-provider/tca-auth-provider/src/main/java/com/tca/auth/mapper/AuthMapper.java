@@ -17,4 +17,7 @@ public interface AuthMapper {
     Optional<String> verifyToken(@Param("token") String token);
 
     Void clearToken(@Param("token") Integer id);
+
+    Void updateToken(@Param("id") Integer id,
+                     @Param("token") String token);
 }

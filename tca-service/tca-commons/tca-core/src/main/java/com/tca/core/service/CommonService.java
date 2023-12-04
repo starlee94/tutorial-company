@@ -2,6 +2,7 @@ package com.tca.core.service;
 
 import com.tca.core.entity.EmpAcc;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
@@ -12,7 +13,7 @@ import java.util.Optional;
 
 public interface CommonService {
 
-    @GetMapping("/auth/get/username")
+    @RequestMapping("/auth/get/username")
     Optional<EmpAcc> findByUsername(String username);
 
     @GetMapping("/auth/token/verify")

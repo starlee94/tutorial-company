@@ -20,7 +20,7 @@ public class AuthFindUsernameService extends AbstractAuthService<String, Optiona
     @Override
     protected void validateParameter(String reqParameter) throws Exception {
         if(ObjectUtils.isEmpty(reqParameter)) {
-            throw new LogicException(GlobalRequestEnum.PARAM_LOSS);
+            ex(GlobalRequestEnum.PARAM_LOSS);
         }
     }
 

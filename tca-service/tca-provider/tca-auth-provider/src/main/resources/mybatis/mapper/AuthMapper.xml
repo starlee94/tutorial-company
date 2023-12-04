@@ -34,4 +34,10 @@
         SET vc_token = ""
         WHERE i_emp_id = #{id, jdbcType=INTEGER}
     </update>
+
+    <update id="updateToken">
+        UPDATE emp_acc
+        SET vc_token = #{token, jdbcType=VARCHAR}
+        WHERE i_emp_id = #{id, jdbcType=INTEGER}
+    </update>
 </mapper>

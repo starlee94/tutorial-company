@@ -20,6 +20,8 @@ public abstract class AbstractAuthService<E extends Object, T extends Object> ex
     @Autowired
     protected JwtService jwtService;
 
+    protected String respMsg;
+
     @Override
     public Response<T> handle(E reqParameter) throws Exception {
         try {

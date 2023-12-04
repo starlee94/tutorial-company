@@ -2,7 +2,7 @@ package com.tca.core.config;
 
 import com.tca.core.config.filter.JwtAuthenticationFilter;
 import com.tca.core.constant.enums.AddressUtil;
-import com.tca.core.service.CommonService;
+import com.tca.core.service.AuthEmpService;
 import com.tca.core.service.LogoutService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -31,7 +30,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private CommonService commonService;
+    private AuthEmpService authEmpService;
 
     @Bean
     public LogoutService logoutService() {
@@ -47,8 +46,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> commonService.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
+        return username -> authEmpService.loadUserByUsername(username);
     }
 
     @Bean

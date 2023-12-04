@@ -7,11 +7,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public enum GlobalSystemEnum implements BaseEnumIfc {
 
-    OK("MSCS0000", "成功"),
-    SYSTEM_ERROR("MSCE9999", "失败"),
-    URI_NOT_EXIST("MSCE9998", "接口不存在！"),
-    NO_EXCEPTION_INFO("MSCE9997", "没有获取到异常详细信息！"),
-    FEIGN_ERROR("MSCE9996", "Feign调用出现异常！"),
+    OK("MSCS0000", "SUCCESS"),
+    SYSTEM_ERROR("MSCE9999", "FATAL ERROR"),
+    URI_NOT_EXIST("MSCE9998", "API DOES NOT EXIST!"),
+    NO_EXCEPTION_INFO("MSCE9997", "UNABLE TO ACQUIRE EXCEPTION MESSAGE!"),
+    FEIGN_ERROR("MSCE9996", "Feign EXCEPTION OCCURRED!"),
     ;
 
 

@@ -1,17 +1,16 @@
 package com.tca.auth.controller;
 
+import com.tca.auth.api.request.AuthLoginRequest;
 import com.tca.auth.service.AuthClearTokenService;
 import com.tca.auth.service.AuthFindUsernameService;
+import com.tca.auth.service.AuthLoginService;
 import com.tca.auth.service.AuthVerifyTokenService;
 import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebController;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -28,7 +27,7 @@ public class AuthController extends AbstractWebController {
     @Autowired
     AuthFindUsernameService authFindUsernameService;
 
-    @GetMapping("/get/username")
+    @RequestMapping("/get/username")
     public Response<Optional<EmpAcc>> findByUsername(String username) { return handle(authFindUsernameService, username); }
 
 
@@ -44,5 +43,11 @@ public class AuthController extends AbstractWebController {
 
     @GetMapping("/token/clear")
     public Response<Void> clearToken(@RequestParam("token") String token) { return handle(authClearTokenService, token); }
+
+    @Autowired
+    AuthLoginService authLoginService;
+
+    @PostMapping("/login")
+    public Response<Void> login(@RequestBody AuthLoginRequest authLoginRequest){ return handle(authLoginService,authLoginRequest); }
 
 }

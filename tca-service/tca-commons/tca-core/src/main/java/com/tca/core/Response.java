@@ -34,9 +34,7 @@ public class Response<T> implements Serializable {
 
     @ApiModelProperty(value = "data", name = "data")
     private T data;
-    /**
-     * 该字段不对外设置，用于记录业务处理成功时采用的http-status
-     */
+
     HttpRespStatus httpRespStatus;
 
     public static Response parseResp(String respStr){
