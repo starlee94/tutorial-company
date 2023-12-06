@@ -17,7 +17,7 @@ public interface TokenMapper {
     @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
-    @Select("select * from Token")
+    @Select("select * from token")
     List<Token> findAll();
 
 
@@ -26,7 +26,7 @@ public interface TokenMapper {
     @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
-    @Select("select * from Token where i_emp_id =#{id} and revoked=0")
+    @Select("select * from token where i_emp_id =#{id} and revoked=0")
     List<Token> findAllValidTokenByUser(Integer id);
 
     @Result(property = "id", column = "id")
@@ -34,19 +34,19 @@ public interface TokenMapper {
     @Result(property = "tokenString", column = "token")
     @Result(property = "tokenType", column = "token_type")
     @Result(property = "empAcc.id", column = "i_emp_id")
-    @Select("select * from Token where token=#{token}")
+    @Select("select * from token where token=#{token}")
     Optional<Token> findByToken(String token);
 
-    @Update("update Token set revoked=1")
+    @Update("update token set revoked=1")
     void revokeAll();
 
-    @Insert("insert into Token(revoked,token,token_type,i_emp_id) values(#{revoked}, #{tokenString}, #{tokenType}, #{empAcc.id})")
+    @Insert("insert into token(revoked,token,token_type,i_emp_id) values(#{revoked}, #{tokenString}, #{tokenType}, #{empAcc.id})")
     void save(Token token);
 
-    @Delete("delete from Token where token=#{tokenString}")
+    @Delete("delete from token where token=#{tokenString}")
     void delete(Token token);
 
-    @Update("update Token set revoked=1 where token=#{tokenString}")
+    @Update("update token set revoked=1 where token=#{tokenString}")
     void revokeToken(Token token);
 
 
