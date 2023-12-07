@@ -1,5 +1,6 @@
 package com.tca.auth.service;
 
+import com.google.gson.Gson;
 import com.tca.auth.abstracts.AbstractAuthService;
 import com.tca.auth.api.request.AuthLoginRequest;
 import com.tca.core.Response;
@@ -8,6 +9,7 @@ import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -32,12 +34,19 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
 
     @Override
     public Response<Void> process(AuthLoginRequest reqParameter) throws Exception {
+        LOG.info("AuthLoginRequest param: {}", new Gson().toJson(reqParameter));
 
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        reqParameter.getUsername(),
-                        reqParameter.getSecret())
-        );
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            reqParameter.getUsername(),
+                            reqParameter.getSecret())
+            );
+        }
+        catch (BadCredentialsException e){
+            e.printStackTrace();
+        }
+
 
         Optional<EmpAcc> empAcc = authMapper.findByUsername(reqParameter.getUsername());
         if(empAcc.isPresent() && empAcc.get().getPassword().equals(passwordEncoder.encode(reqParameter.getSecret()))){

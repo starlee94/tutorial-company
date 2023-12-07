@@ -9,6 +9,7 @@ import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebController;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +28,8 @@ public class AuthController extends AbstractWebController {
     @Autowired
     AuthFindUsernameService authFindUsernameService;
 
+
+    @Hidden
     @RequestMapping("/get/username")
     public Response<Optional<EmpAcc>> findByUsername(String username) { return handle(authFindUsernameService, username); }
 
@@ -34,6 +37,7 @@ public class AuthController extends AbstractWebController {
     @Autowired
     AuthVerifyTokenService authVerifyTokenService;
 
+    @Hidden
     @GetMapping("/token/verify")
     public Response<Optional<String>> verifyToken(@RequestParam("token") String token) { return handle(authVerifyTokenService, token); }
 
@@ -41,6 +45,7 @@ public class AuthController extends AbstractWebController {
     @Autowired
     AuthClearTokenService authClearTokenService;
 
+    @Hidden
     @GetMapping("/token/clear")
     public Response<Void> clearToken(@RequestParam("token") String token) { return handle(authClearTokenService, token); }
 

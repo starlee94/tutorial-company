@@ -2,10 +2,8 @@ package com.tca.core.config;
 
 import com.tca.core.config.feign.ActiveFeignConfiguration;
 import com.tca.core.constant.finals.SpringBeanFactory;
-import com.tca.core.service.AuthEmpService;
 import com.tca.core.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,22 +26,15 @@ public class ApplicationConfiguration {
     @Value("${mybatis_dao_scan_packages}")
     private String mybatisDaoScanPackages;
 
-
-    @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
-
     @PostConstruct
     private void init() throws Exception {
         DaoCache.init(mybatisDaoScanPackages);
     }
 
     @Bean
-    public AuthenticationManager authenticationManager() throws Exception {
-        return authenticationConfiguration.getAuthenticationManager();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
-
-    @Bean
-    public AuthEmpService authEmpService() throws Exception { return new AuthEmpService(); }
 
     @Bean
     public JwtService jwtService() {

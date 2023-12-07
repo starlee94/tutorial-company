@@ -9,13 +9,6 @@ import org.springframework.cloud.openfeign.FeignClient;
  */
 @FeignClient(value = "${feign_auth_service:" + ServiceName.AUTH_SERVICE + "-${spring.profiles.active}}", url = "${service.auth.url}")
 public interface AuthService extends CommonService {
-//        @GetMapping("/auth/get/username")
-//        Optional<EmpAcc> findByUsername(String username);
 
-//        @GetMapping("/auth/token/verify")
-//        Optional<String> verifyToken (String token);
-
-//        @GetMapping("/auth/token/clear")
-//        Void clearToken(String token);
 
 }

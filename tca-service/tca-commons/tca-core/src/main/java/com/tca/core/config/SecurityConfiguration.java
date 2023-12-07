@@ -2,12 +2,13 @@ package com.tca.core.config;
 
 import com.tca.core.config.filter.JwtAuthenticationFilter;
 import com.tca.core.constant.enums.AddressUtil;
-import com.tca.core.service.AuthEmpService;
+import com.tca.core.service.CommonService;
 import com.tca.core.service.LogoutService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -30,7 +32,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Autowired
-    private AuthEmpService authEmpService;
+    private CommonService commonService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
 
     @Bean
     public LogoutService logoutService() {
@@ -46,7 +51,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> authEmpService.loadUserByUsername(username);
+        return username -> commonService.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found."));
     }
 
     @Bean

@@ -5,9 +5,9 @@ import com.google.gson.JsonObject;
 import feign.FeignException;
 import feign.Response;
 import feign.codec.DecodeException;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,13 +18,16 @@ import java.util.Arrays;
  * 提供getStrBody方法
  * @author Devin.qi < devin.qi@ixsecurities.com />
  */
+@Slf4j
 abstract class AbstractDecoder {
 
 
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
+    protected Logger LOG = log;
 
 
     protected JsonObject parseObject(String text){ return new Gson().fromJson(text, JsonObject.class); }
+
+    protected com.tca.core.Response parseResponse(String text) {return new Gson().fromJson(text, com.tca.core.Response.class); }
 
     protected String getStrBody(Response response) throws IOException, DecodeException, FeignException  {
         Response.Body body = response.body();

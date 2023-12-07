@@ -2,6 +2,7 @@ package com.tca.core;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.google.gson.Gson;
+import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.constant.enums.HttpRespStatus;
 import com.tca.core.constant.interfaces.BaseEnumIfc;
 import io.swagger.annotations.ApiModel;
@@ -51,6 +52,15 @@ public class Response<T> implements Serializable {
         return Response.builder()
                 .code(baseEnumIfc.getRspCode())
                 .msg(baseEnumIfc.getRspMsg())
+                .build();
+    }
+
+    public static Response genResp(Object data){
+
+        return Response.builder()
+                .code(GlobalSystemEnum.OK.getRspCode())
+                .msg(GlobalSystemEnum.OK.getRspMsg())
+                .data(data)
                 .build();
     }
 

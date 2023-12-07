@@ -42,7 +42,6 @@ public abstract class AbstractWebController extends BaseController {
                 pageReq.validate();
             }
             response = webService.handle(reqParameter);
-            log.info("Response: {}", response);
             httpServletResponse.setStatus(HttpRespStatus.OK.getStatus());
             response.setCode(GlobalSystemEnum.OK.getRspCode());
             response.setMsg(GlobalSystemEnum.OK.getRspMsg());

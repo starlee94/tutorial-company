@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CommonService {
 
     @RequestMapping("/auth/get/username")
-    Optional<EmpAcc> findByUsername(String username);
+    Optional<EmpAcc> findByUsername(@RequestParam("username") String username);
 
     @GetMapping("/auth/token/verify")
     Optional<String> verifyToken(@RequestParam("token") String token);
