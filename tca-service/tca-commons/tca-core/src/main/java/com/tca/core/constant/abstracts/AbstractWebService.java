@@ -3,7 +3,9 @@ package com.tca.core.constant.abstracts;
 
 import com.tca.core.Response;
 import com.tca.core.constant.finals.SpringBeanFactory;
+import com.tca.core.constant.interfaces.BaseEnumIfc;
 import com.tca.core.constant.interfaces.BaseService;
+import com.tca.core.exception.LogicException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.http.HttpServletRequest;
@@ -64,5 +66,8 @@ public abstract class AbstractWebService<E extends Object, T extends Object> ext
         return webService.process(reqParameter);
     }
 
-
+    @Override
+    public void ex(BaseEnumIfc baseEnumIfc){
+        throw new LogicException(baseEnumIfc);
+    }
 }

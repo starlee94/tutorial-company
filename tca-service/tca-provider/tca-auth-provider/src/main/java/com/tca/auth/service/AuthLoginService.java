@@ -9,14 +9,12 @@ import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
-import java.util.Optional;
 
 @Service
 public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void> {
@@ -36,29 +34,24 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
     public Response<Void> process(AuthLoginRequest reqParameter) throws Exception {
         LOG.info("AuthLoginRequest param: {}", new Gson().toJson(reqParameter));
 
-        try{
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(
-                            reqParameter.getUsername(),
-                            reqParameter.getSecret())
-            );
-        }
-        catch (BadCredentialsException e){
-            e.printStackTrace();
-        }
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        reqParameter.getUsername(),
+                        reqParameter.getSecret())
+        );
 
-
-        Optional<EmpAcc> empAcc = authMapper.findByUsername(reqParameter.getUsername());
-        if(empAcc.isPresent() && empAcc.get().getPassword().equals(passwordEncoder.encode(reqParameter.getSecret()))){
+        EmpAcc empAcc = authMapper.findByUsername(reqParameter.getUsername());
+        if(!ObjectUtils.isEmpty(empAcc)){
             String token = jwtService.generateToken(new HashMap<>(), reqParameter.getUsername());
-            authMapper.updateToken(empAcc.get().getId(), token);
-            respMsg = String.format("Employee %s logged in.", reqParameter.getUsername());
-            LOG.info(respMsg);
-            return Response.genResp(GlobalSystemEnum.OK, respMsg);
+            authMapper.updateToken(empAcc.getId(), token);
+            respMsg = String.format("Employee %s logged in. Token: %s", reqParameter.getUsername(), token);
+            return Response.genResp(respMsg);
         }
 
         return Response.genResp(GlobalSystemEnum.SYSTEM_ERROR);
     }
+
+
 
 
 }

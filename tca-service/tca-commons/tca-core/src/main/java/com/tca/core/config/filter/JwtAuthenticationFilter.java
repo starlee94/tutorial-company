@@ -5,6 +5,7 @@ import com.tca.core.service.CommonService;
 import com.tca.core.service.JwtService;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -42,7 +43,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
         RequestHolder.init(request);
-        log.info("Request uri: { {} }", request.getRequestURI());
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userName;
@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         userName = jwtService.extractUsername(jwt);
         if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-            boolean isTokenValid = commonService.verifyToken(jwt).isPresent();
+            boolean isTokenValid = StringUtils.isNotEmpty(commonService.verifyToken(jwt));
             if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         userDetails,

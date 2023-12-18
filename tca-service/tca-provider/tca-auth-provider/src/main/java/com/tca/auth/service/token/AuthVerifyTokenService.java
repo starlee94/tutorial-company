@@ -1,4 +1,4 @@
-package com.tca.auth.service;
+package com.tca.auth.service.token;
 
 import com.tca.auth.abstracts.AbstractAuthService;
 import com.tca.core.Response;
@@ -8,13 +8,11 @@ import com.tca.core.exception.LogicException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Optional;
-
 /**
  * @author star.lee
  */
 @Service
-public class AuthVerifyTokenService extends AbstractAuthService<String, Optional<String>> {
+public class AuthVerifyTokenService extends AbstractAuthService<String, String> {
 
     @Override
     protected void validateParameter(String reqParameter) throws Exception {
@@ -24,7 +22,7 @@ public class AuthVerifyTokenService extends AbstractAuthService<String, Optional
     }
 
     @Override
-    public Response<Optional<String>> process(String reqParameter) throws Exception {
+    public Response<String> process(String reqParameter) throws Exception {
         return Response.genResp(GlobalSystemEnum.OK, authMapper.verifyToken(reqParameter));
     }
 }

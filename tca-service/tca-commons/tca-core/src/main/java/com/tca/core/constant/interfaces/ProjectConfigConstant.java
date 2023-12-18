@@ -12,6 +12,11 @@ public interface ProjectConfigConstant {
     String TOKEN_HEADER_NAME = "Authorization";
 
     /**
+     * 用于存放sql-data的header名称
+     */
+    String SQL_DATA_HEADER = "SqlData";
+
+    /**
      * 请求来源  APP or PC
      * default: PC
      */

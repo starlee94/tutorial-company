@@ -12,11 +12,11 @@ import java.sql.SQLException;
  * @author star.lee
  */
 @Component
-public class HikariLoader implements ApplicationRunner {
+public class HikariConfiguration implements ApplicationRunner {
 
     private final HikariDataSource hikariDataSource;
 
-    public HikariLoader(HikariDataSource hikariDataSource) {
+    public HikariConfiguration(HikariDataSource hikariDataSource) {
         this.hikariDataSource = hikariDataSource;
     }
 

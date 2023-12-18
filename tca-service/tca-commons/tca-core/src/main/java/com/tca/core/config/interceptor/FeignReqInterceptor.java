@@ -7,16 +7,18 @@ import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 
 /**
  * @author star.lee
  */
+@Component
 public class FeignReqInterceptor implements RequestInterceptor {
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private static final String HEADER_TRACE_ID = "trace";
+//    private static final String HEADER_TRACE_ID = "trace";
 
     public FeignReqInterceptor() {
         logger.info("----------------------------------- {} initialization completed! -----------------------------------", this.getClass().getSimpleName());

@@ -1,13 +1,15 @@
 package com.tca.core.config.decoder;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.tca.core.config.SimpleGrantedAuthorityDeserializer;
 import feign.FeignException;
 import feign.Response;
 import feign.codec.DecodeException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,13 +23,14 @@ import java.util.Arrays;
 @Slf4j
 abstract class AbstractDecoder {
 
-
     protected Logger LOG = log;
 
+    protected ObjectMapper objectMapper = new ObjectMapper();
 
-    protected JsonObject parseObject(String text){ return new Gson().fromJson(text, JsonObject.class); }
-
-    protected com.tca.core.Response parseResponse(String text) {return new Gson().fromJson(text, com.tca.core.Response.class); }
+    public AbstractDecoder(){
+        objectMapper.registerModule(new SimpleModule().addDeserializer(
+                SimpleGrantedAuthority.class, new SimpleGrantedAuthorityDeserializer()));
+    }
 
     protected String getStrBody(Response response) throws IOException, DecodeException, FeignException  {
         Response.Body body = response.body();

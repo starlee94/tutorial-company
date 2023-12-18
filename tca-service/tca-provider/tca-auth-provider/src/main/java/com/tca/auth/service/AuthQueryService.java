@@ -5,17 +5,14 @@ import com.tca.core.Response;
 import com.tca.core.constant.enums.GlobalRequestEnum;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
-import com.tca.core.exception.LogicException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
-
-import java.util.Optional;
 
 /**
  * @author star.lee
  */
 @Service
-public class AuthFindUsernameService extends AbstractAuthService<String, Optional<EmpAcc>> {
+public class AuthQueryService extends AbstractAuthService<String, EmpAcc> {
 
     @Override
     protected void validateParameter(String reqParameter) throws Exception {
@@ -25,7 +22,7 @@ public class AuthFindUsernameService extends AbstractAuthService<String, Optiona
     }
 
     @Override
-    public Response<Optional<EmpAcc>> process(String reqParameter) throws Exception {
+    public Response<EmpAcc> process(String reqParameter) throws Exception {
         return Response.genResp(GlobalSystemEnum.OK, authMapper.findByUsername(reqParameter));
     }
 }

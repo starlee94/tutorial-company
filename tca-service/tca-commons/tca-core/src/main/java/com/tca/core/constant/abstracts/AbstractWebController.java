@@ -25,7 +25,7 @@ public abstract class AbstractWebController extends BaseController {
      * @return
      */
     protected final <E extends Object, T extends Object> Response<T> handle(AbstractWebService<E, T> webService, E reqParameter){
-        log.info("Request: {}", toJSONString(reqParameter));
+        log.info("Request: { {} }", toJSONString(reqParameter));
         Response<T> response = null;
         StopWatch sw = new StopWatch();
         try {
@@ -80,7 +80,7 @@ public abstract class AbstractWebController extends BaseController {
             PageHelper.clearPage();
             sw.stop();
         }
-        log.info("Request:{}, Service:{}, Time lapsed:{}", httpServletRequest.getRequestURI(), sw.getLastTaskName(), sw.getTotalTimeSeconds());
+        log.info("Request:{ {} }, Service:{}, Time lapsed:{ {} }", httpServletRequest.getRequestURI(), sw.getLastTaskName(), sw.getTotalTimeSeconds());
         return response;
     }
 

@@ -1,10 +1,10 @@
 package com.tca.auth.controller;
 
 import com.tca.auth.api.request.AuthLoginRequest;
-import com.tca.auth.service.AuthClearTokenService;
-import com.tca.auth.service.AuthFindUsernameService;
 import com.tca.auth.service.AuthLoginService;
-import com.tca.auth.service.AuthVerifyTokenService;
+import com.tca.auth.service.AuthQueryService;
+import com.tca.auth.service.token.AuthClearTokenService;
+import com.tca.auth.service.token.AuthVerifyTokenService;
 import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebController;
 import com.tca.core.constant.enums.GlobalSystemEnum;
@@ -12,8 +12,6 @@ import com.tca.core.entity.EmpAcc;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 /**
  * @author star.lee
@@ -26,12 +24,12 @@ public class AuthController extends AbstractWebController {
     public Response<Void> testAuth() { return Response.genResp(GlobalSystemEnum.OK,"success access."); }
 
     @Autowired
-    AuthFindUsernameService authFindUsernameService;
+    AuthQueryService authQueryService;
 
 
     @Hidden
     @RequestMapping("/get/username")
-    public Response<Optional<EmpAcc>> findByUsername(String username) { return handle(authFindUsernameService, username); }
+    public Response<EmpAcc> findByUsername(String username) { return handle(authQueryService, username); }
 
 
     @Autowired
@@ -39,7 +37,7 @@ public class AuthController extends AbstractWebController {
 
     @Hidden
     @GetMapping("/token/verify")
-    public Response<Optional<String>> verifyToken(@RequestParam("token") String token) { return handle(authVerifyTokenService, token); }
+    public Response<String> verifyToken(@RequestParam("token") String token) { return handle(authVerifyTokenService, token); }
 
 
     @Autowired

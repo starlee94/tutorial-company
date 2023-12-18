@@ -1,5 +1,6 @@
 package com.tca.emp.abstracts;
 
+import com.tca.auth.api.feign.AuthService;
 import com.tca.emp.mapper.EmpAccMapper;
 import com.tca.core.DynamicDataSource;
 import com.tca.core.Response;
@@ -16,6 +17,9 @@ public abstract class AbstractEmpService<E extends Object, T extends Object> ext
     protected EmpAccMapper empAccMapper;
 
     //------------Services------------
+
+    @Autowired
+    protected AuthService authService;
 
     @Override
     public Response<T> handle(E reqParameter) throws Exception {

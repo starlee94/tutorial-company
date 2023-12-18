@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
+import java.io.IOException;
+
 
 /**
  * 项目顶级父类，公共限制
@@ -13,6 +15,8 @@ import org.slf4j.Logger;
 public abstract class ProjectBase {
 
     protected Logger LOG = log;
+
+    Gson gson = new Gson();
 
     /**
      * 序列化
@@ -31,6 +35,8 @@ public abstract class ProjectBase {
      * @param <T>
      * @return
      */
-    protected <T> T parseObject(String text, Class<T> clazz){ return new Gson().fromJson(text, clazz); }
+    protected <T> T parseObject(String text, Class<T> clazz) throws IOException { return gson.fromJson(text, clazz); }
+
+    protected String readObject(Object obj) throws IOException { return gson.toJson(obj); }
 
 }

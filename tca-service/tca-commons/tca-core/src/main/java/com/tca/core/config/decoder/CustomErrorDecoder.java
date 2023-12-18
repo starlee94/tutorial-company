@@ -7,8 +7,6 @@ import feign.codec.ErrorDecoder;
 
 public class CustomErrorDecoder extends AbstractDecoder implements ErrorDecoder {
 
-
-
     @Override
     public Exception decode(String methodKey, Response response) {
         LOG.info("Utilize CustomErrorDecoder to complete response body decryption... status:{}", response.status());

@@ -1,6 +1,7 @@
-package com.tca.auth.service;
+package com.tca.auth.service.token;
 
 import com.tca.auth.abstracts.AbstractAuthService;
+import com.tca.auth.service.AuthQueryService;
 import com.tca.core.Response;
 import com.tca.core.constant.enums.GlobalRequestEnum;
 import com.tca.core.constant.enums.GlobalSystemEnum;
@@ -11,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
-import java.util.Optional;
-
 /**
  * @author star.lee
  */
@@ -20,7 +19,7 @@ import java.util.Optional;
 public class AuthClearTokenService extends AbstractAuthService<String,Void> {
 
     @Autowired
-    private AuthFindUsernameService authFindUsernameService;
+    private AuthQueryService authQueryService;
 
     @Override
     protected void validateParameter(String reqParameter) throws Exception {
@@ -35,9 +34,9 @@ public class AuthClearTokenService extends AbstractAuthService<String,Void> {
 
         String username = jwtService.extractUsername(reqParameter);
         if(StringUtils.isNotEmpty(username)){
-            Optional<EmpAcc> employee = authFindUsernameService.process(username).getData();
-            if(employee.isPresent()){
-                authMapper.clearToken(employee.get().getId());
+            EmpAcc empAcc = authQueryService.process(username).getData();
+            if(!ObjectUtils.isEmpty(empAcc)){
+                authMapper.clearToken(empAcc.getId());
             }
             else{ globalSystemEnum = GlobalSystemEnum.SYSTEM_ERROR; }
         }
