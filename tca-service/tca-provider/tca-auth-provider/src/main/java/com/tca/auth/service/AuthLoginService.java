@@ -16,6 +16,9 @@ import org.springframework.util.ObjectUtils;
 
 import java.util.HashMap;
 
+/**
+ * @author star.lee
+ */
 @Service
 public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void> {
 
@@ -44,8 +47,8 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
         if(!ObjectUtils.isEmpty(empAcc)){
             String token = jwtService.generateToken(new HashMap<>(), reqParameter.getUsername());
             authMapper.updateToken(empAcc.getId(), token);
-            respMsg = String.format("Employee %s logged in. Token: %s", reqParameter.getUsername(), token);
-            return Response.genResp(respMsg);
+            respMsg = String.format("Employee %s logged in.", reqParameter.getUsername());
+            return Response.genResp(respMsg, token);
         }
 
         return Response.genResp(GlobalSystemEnum.SYSTEM_ERROR);

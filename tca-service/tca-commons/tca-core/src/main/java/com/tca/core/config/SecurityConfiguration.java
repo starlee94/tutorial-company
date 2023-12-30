@@ -3,6 +3,7 @@ package com.tca.core.config;
 import com.tca.core.config.filter.JwtAuthenticationFilter;
 import com.tca.core.constant.enums.AddressUtil;
 import com.tca.core.service.CommonService;
+import com.tca.core.service.JwtService;
 import com.tca.core.service.LogoutService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,11 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private AuthenticationManager authenticationManager;
 
     @Bean
+    public JwtService jwtService() {
+        return new JwtService();
+    }
+
+    @Bean
     public LogoutService logoutService() {
         return new LogoutService();
     }
@@ -50,8 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return username -> commonService.findByUsername(username) == null ?
-        null : commonService.findByUsername(username);
+        return username -> commonService.findByUsername(username);
     }
 
     @Bean
@@ -83,7 +88,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationProvider(authenticationProvider())
-                .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtService(), commonService, userDetailsService()), UsernamePasswordAuthenticationFilter.class)
                 .logout()
                 .logoutUrl("/api/v1/auth/logout")
                 .addLogoutHandler(logoutService())

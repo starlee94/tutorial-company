@@ -3,7 +3,6 @@ package com.tca.core.config;
 
 import com.tca.core.config.feign.ActiveFeignClientConfiguration;
 import com.tca.core.constant.finals.SpringBeanFactory;
-import com.tca.core.service.JwtService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +19,7 @@ import javax.annotation.PostConstruct;
  */
 
 @Configuration
-@Import({ActiveFeignClientConfiguration.class, SecurityConfiguration.class})
+@Import({ActiveFeignClientConfiguration.class, SecurityConfiguration.class, HikariConfiguration.class})
 @Slf4j
 public class ApplicationConfiguration {
 
@@ -35,11 +34,6 @@ public class ApplicationConfiguration {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
-    }
-
-    @Bean
-    public JwtService jwtService() {
-        return new JwtService();
     }
 
     @Bean

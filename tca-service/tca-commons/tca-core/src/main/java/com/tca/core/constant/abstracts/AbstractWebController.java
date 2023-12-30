@@ -43,8 +43,6 @@ public abstract class AbstractWebController extends BaseController {
             }
             response = webService.handle(reqParameter);
             httpServletResponse.setStatus(HttpRespStatus.OK.getStatus());
-            response.setCode(GlobalSystemEnum.OK.getRspCode());
-            response.setMsg(GlobalSystemEnum.OK.getRspMsg());
         } catch (LogicException logicException) {
 
             log.error("Request 1:"+httpServletRequest.getRequestURI() + " Logic Error！", logicException);

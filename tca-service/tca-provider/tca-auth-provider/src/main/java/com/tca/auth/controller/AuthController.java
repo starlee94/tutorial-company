@@ -11,6 +11,9 @@ import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -20,17 +23,25 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/auth")
 public class AuthController extends AbstractWebController {
 
+    @GetMapping("/info")
+    public EmpAcc getEmployeeInfo(@AuthenticationPrincipal UserDetails userDetails){
+        EmpAcc empAcc = (EmpAcc) userDetails;
+        if (ObjectUtils.isEmpty(empAcc)) {
+            LOG.warn("Header Token is empty, fail to acquire employee info!");
+            return null;
+        }
+        return empAcc;
+    }
+
     @GetMapping("/test")
     public Response<Void> testAuth() { return Response.genResp(GlobalSystemEnum.OK,"success access."); }
 
     @Autowired
     AuthQueryService authQueryService;
 
-
     @Hidden
     @RequestMapping("/get/username")
     public Response<EmpAcc> findByUsername(String username) { return handle(authQueryService, username); }
-
 
     @Autowired
     AuthVerifyTokenService authVerifyTokenService;
@@ -52,5 +63,8 @@ public class AuthController extends AbstractWebController {
 
     @PostMapping("/login")
     public Response<Void> login(@RequestBody AuthLoginRequest authLoginRequest){ return handle(authLoginService,authLoginRequest); }
+
+
+
 
 }

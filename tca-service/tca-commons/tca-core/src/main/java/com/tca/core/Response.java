@@ -36,6 +36,9 @@ public class Response<T> implements Serializable {
     @ApiModelProperty(value = "data", name = "data")
     private T data;
 
+    @ApiModelProperty(value = "traceId", name = "traceId")
+    private String traceId;
+
     HttpRespStatus httpRespStatus;
 
     public static Response parseResp(String respStr){
@@ -60,6 +63,15 @@ public class Response<T> implements Serializable {
         return Response.builder()
                 .code(GlobalSystemEnum.OK.getRspCode())
                 .msg(GlobalSystemEnum.OK.getRspMsg())
+                .data(data)
+                .build();
+    }
+
+    public static Response genResp(String msg, Object data){
+
+        return Response.builder()
+                .code(GlobalSystemEnum.OK.getRspCode())
+                .msg(msg)
                 .data(data)
                 .build();
     }

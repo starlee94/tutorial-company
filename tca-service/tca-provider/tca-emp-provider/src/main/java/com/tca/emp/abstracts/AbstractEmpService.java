@@ -29,4 +29,8 @@ public abstract class AbstractEmpService<E extends Object, T extends Object> ext
             DynamicDataSource.clearDataSource();
         }
     }
+
+    protected final Integer getEmployeeId(){
+        return authService.getEmployeeInfo().getId();
+    }
 }

@@ -16,8 +16,7 @@ public class EmpAccTestService extends AbstractEmpService<Void, Object> {
 
     @Override
     public Response<Object> process(Void reqParameter) throws Exception {
-//        Integer id = authService.getId();
-//        return Response.genResp(GlobalSystemEnum.OK, String.format("Id: %s", id));
-        return null;
+
+        return Response.genResp(String.format("Id: %s", getEmployeeId()));
     }
 }
