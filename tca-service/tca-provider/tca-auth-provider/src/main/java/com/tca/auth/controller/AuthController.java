@@ -40,7 +40,7 @@ public class AuthController extends AbstractWebController {
     AuthQueryService authQueryService;
 
     @Hidden
-    @RequestMapping("/get/username")
+    @GetMapping("/get/username")
     public Response<EmpAcc> findByUsername(String username) { return handle(authQueryService, username); }
 
     @Autowired

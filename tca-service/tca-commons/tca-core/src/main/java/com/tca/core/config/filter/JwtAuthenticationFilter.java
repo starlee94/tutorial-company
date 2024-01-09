@@ -1,12 +1,11 @@
 package com.tca.core.config.filter;
 
-import com.tca.core.config.holder.RequestHolder;
 import com.tca.core.service.CommonService;
 import com.tca.core.service.JwtService;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,22 +25,23 @@ import java.io.IOException;
  */
 @Component
 @Slf4j
-@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
-    private final JwtService jwtService;
+    @Autowired
+    private JwtService jwtService;
 
-    private final CommonService commonService;
+    @Autowired
+    private CommonService commonService;
 
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private UserDetailsService userDetailsService;
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        RequestHolder.init(request);
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String userName;
@@ -72,7 +72,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
 
         }
-        RequestHolder.clean();
     }
 
 }
