@@ -1,0 +1,54 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.tca</groupId>
+        <artifactId>tca-service</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>tca-provider</artifactId>
+    <name>tca-provider</name>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>tca-auth-provider</module>
+        <module>tca-emp-provider</module>
+    </modules>
+
+    <dependencies>
+        <!--Inner projects-->
+        <!--tca-commons-->
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-commons</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-core</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-utils</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+
+        <!--tca-api-->
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-auth-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tca</groupId>
+            <artifactId>tca-emp-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+    </dependencies>
+</project>

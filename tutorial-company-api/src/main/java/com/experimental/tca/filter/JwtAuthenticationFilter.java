@@ -3,7 +3,7 @@ package com.experimental.tca.filter;
 import java.io.IOException;
 
 import com.experimental.tca.mapper.TokenMapper;
-import com.experimental.tca.entity.Token;
+import com.experimental.tca.entity.v1.Token;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

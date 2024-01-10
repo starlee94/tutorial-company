@@ -1,6 +1,6 @@
 package com.experimental.tca.mapper;
 
-import com.experimental.tca.entity.Token;
+import com.experimental.tca.entity.v1.Token;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;

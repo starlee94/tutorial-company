@@ -1,0 +1,34 @@
+server:
+  port: 10001
+
+spring:
+  application:
+    name: tca-emp
+
+  profiles:
+    include: ${spring.profiles.active}
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/tutorialdb
+    username: star
+    password: Pa$sw0rd
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  sleuth:
+    web:
+      client:
+        enabled: true
+    sampler:
+      probability: 1.0
+
+mybatis:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+
+mybatis_dao_scan_packages: com.tca.emp.mapper
+
+service:
+  emp:
+    url: http://127.0.0.1:10001
+  auth:
+    url: http://127.0.0.1:10002

@@ -1,0 +1,50 @@
+---
+apiVersion: "v1"
+kind: "ConfigMap"
+metadata:
+  name: auth-config
+  namespace: tca
+  labels:
+    app: auth
+data:
+  application-test.yml: |
+    server:
+      port: 16969
+    
+    spring:
+      application:
+        name: tca-auth
+    
+        datasource:
+    url: jdbc:mysql://localhost:3306/tutorialdb
+    username: star
+    password: Pa$sw0rd
+    
+      sleuth:
+        web:
+          client:
+            enabled: true
+        sampler:
+          # 将采样比例设置为 1.0，也就是全部都需要。默认是 0.1
+          probability: 1.0
+    
+    mybatis:
+      mapper-locations: classpath:mybatis/mappers/*.xml
+    
+    feign:
+      client:
+        config:
+          default:
+            # feign调用超时时间，单位：毫秒。readTimeout 和 connectTimeout 必须一起设置
+            readTimeout: 1800000
+            connectTimeout: 1800000
+    
+    feign_auth_service: tca-auth-test
+    feign_emp_service: tca-emp-test    
+    
+    # 递归方法最大递归次数，防止在递归操作时服务器因为脏数据原因引发内存溢出
+    max_recursive_number: 20
+    
+    
+    # mapper-dao存放的包目录
+    mybatis_dao_scan_packages: com.tca.auth.mapper
