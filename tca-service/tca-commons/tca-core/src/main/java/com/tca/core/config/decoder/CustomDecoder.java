@@ -7,7 +7,6 @@ import com.tca.core.config.holder.FeignHolder;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.exception.FeignClientException;
 import feign.FeignException;
-import feign.codec.DecodeException;
 import feign.codec.Decoder;
 import org.springframework.util.StopWatch;
 
@@ -27,12 +26,12 @@ public class CustomDecoder extends AbstractDecoder implements Decoder {
     }
 
     @Override
-    public Object decode(feign.Response response, Type type) throws IOException, DecodeException, FeignException {
+    public Object decode(feign.Response response, Type type) throws IOException, FeignException {
         StopWatch sw = new StopWatch();
 
-        LOG.info("Utilize CustomDecoder to complete response body decryption...");
         // 如果以Resp为返回体，那么就用原生Decoder去反序列化
         if (type.getTypeName().indexOf(Response.class.getName()) == 0){
+            LOG.info("Utilize CustomDecoder to complete response body decryption...");
             return defaultDecoder.decode(response, type);
         }
         // 如果不是以Resp为返回体，那么就将data解析出来
@@ -46,7 +45,7 @@ public class CustomDecoder extends AbstractDecoder implements Decoder {
         Object data = objectMapper.readValue(result, javaType);
         sw.stop();
 
-        LOG.info("CustomDecoder decryption time lapsed:{}", sw.getTotalTimeSeconds());
+        LOG.info("CustomDecoder decryption time lapsed:{}s", sw.getTotalTimeSeconds());
         LOG.info("Utilize CustomDecoder to complete response body decryption...: {}", data.toString());
 //        LOG.info("Data: {}, dataType: {}", data, data.getClass());
         if (GlobalSystemEnum.OK.getRspCode().equals(resp.getCode())){
