@@ -5,8 +5,11 @@ import com.tca.core.constant.enums.GlobalRequestEnum;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.emp.abstracts.AbstractEmpService;
 import com.tca.emp.api.vo.EmployeeDetail;
+import com.tca.emp.api.vo.FullEmployeeDetail;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 /**
  * @author star.lee
@@ -26,5 +29,9 @@ public class EmpAccQueryService extends AbstractEmpService<Object, Object> {
     public Response<EmployeeDetail> queryUsername(String username) throws Exception{
         validateParameter(username);
         return Response.genResp(GlobalSystemEnum.OK, empAccMapper.findEmpByUsername(username));
+    }
+
+    public Response<List<FullEmployeeDetail>> queryEmployees(){
+        return Response.genResp(GlobalSystemEnum.OK, empAccMapper.findAll());
     }
 }

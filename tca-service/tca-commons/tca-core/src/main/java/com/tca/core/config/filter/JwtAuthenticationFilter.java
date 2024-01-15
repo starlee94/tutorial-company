@@ -1,5 +1,6 @@
 package com.tca.core.config.filter;
 
+import com.tca.core.config.holder.RequestHolder;
 import com.tca.core.service.CommonService;
 import com.tca.core.service.JwtService;
 import lombok.NonNull;
@@ -42,35 +43,41 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain)
             throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userName;
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        jwt = authHeader.substring(7);
-        log.info("jwt: {}", jwt);
-        userName = jwtService.extractUsername(jwt);
-        if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null
-        ) {
-            UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
-            boolean isTokenValid = StringUtils.isNotEmpty(commonService.verifyToken(jwt));
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+        try{
+            RequestHolder.init(request);
+
+            final String authHeader = request.getHeader("Authorization");
+            final String jwt;
+            final String userName;
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            jwt = authHeader.substring(7);
+            log.info("jwt: {}", jwt);
+            userName = jwtService.extractUsername(jwt);
+            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null
+            ) {
+                UserDetails userDetails = userDetailsService.loadUserByUsername(userName);
+                boolean isTokenValid = StringUtils.isNotEmpty(commonService.verifyToken(jwt));
+                if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails,
+                            null,
+                            userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                }
+                if (!jwtService.isTokenValid(jwt, userDetails)) {
+                    commonService.clearToken(jwt);
+                }
+
+                filterChain.doFilter(request, response);
 
             }
-            if (!jwtService.isTokenValid(jwt, userDetails)) {
-                commonService.clearToken(jwt);
-            }
-
-            filterChain.doFilter(request, response);
-
+        }finally {
+            RequestHolder.clean();
         }
     }
 
