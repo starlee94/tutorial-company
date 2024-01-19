@@ -11,6 +11,8 @@ import com.tca.emp.api.domain.req.SetStatusRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
+import java.util.Date;
+
 @Service
 public class EmpAccActionService extends AbstractEmpService<Object, Object> {
     @Override
@@ -41,13 +43,13 @@ public class EmpAccActionService extends AbstractEmpService<Object, Object> {
 
     public Response<Void> setTag(SetTagRequest setTagRequest) throws Exception{
         validateParameter(setTagRequest);
-        empAccMapper.setTag(setTagRequest.getEmployeeId(), setTagRequest.getTagId());
+        empAccMapper.setTag(setTagRequest.getEmployeeId(), setTagRequest.getTagId(), new Date());
         return Response.genSuccessResp();
     }
 
     public Response<Void> setStatus(SetStatusRequest setStatusRequest) throws Exception{
         validateParameter(setStatusRequest);
-        empAccMapper.setStatus(setStatusRequest.getEmployeeId(), setStatusRequest.getStatus());
+        empAccMapper.setStatus(setStatusRequest.getEmployeeId(), setStatusRequest.getStatus(), new Date());
         return Response.genSuccessResp();
     }
 }

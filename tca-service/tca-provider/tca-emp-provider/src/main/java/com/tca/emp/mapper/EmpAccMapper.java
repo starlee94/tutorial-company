@@ -8,6 +8,7 @@ import com.tca.emp.api.domain.vo.FullEmployeeDetail;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public interface EmpAccMapper {
 
     Void createEmployee(CreateEmpPo createEmpPo);
 
-    Void setTag(@Param("empId") Integer empId, @Param("tagId") TagType tagId);
+    Void setTag(@Param("empId") Integer empId, @Param("tagId") TagType tagId, @Param("updateTime")Date updateTime);
 
-    Void setStatus(@Param("empId") Integer empId, @Param("status") EmployeeStatus status);
+    Void setStatus(@Param("empId") Integer empId, @Param("status") EmployeeStatus status, @Param("updateTime")Date updateTime);
 }
