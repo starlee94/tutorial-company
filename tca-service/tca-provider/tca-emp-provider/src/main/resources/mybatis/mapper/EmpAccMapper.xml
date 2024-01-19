@@ -28,6 +28,26 @@
         vc_last_name, i_emp_status,
         dt_create_time, dt_update_time
     </sql>
+    <select id="findById" resultMap="BASE_RESULT_MAP" parameterType="java.lang.Integer">
+        SELECT
+        <include refid="BASE_COLUMN_LIST"/>
+        FROM emp_acc
+        WHERE i_emp_id = #{empId}
+    </select>
+
+    <select id="findEmpByUsername" resultMap="BASE_RESULT_MAP" parameterType="java.lang.String">
+        SELECT
+        <include refid="BASE_COLUMN_LIST"/>
+        FROM emp_acc
+        WHERE
+        i_del = 0 AND
+        vc_emp_uname = #{username}
+    </select>
+    <select id="findAll" resultMap="FULL_RESULT_MAP">
+        SELECT
+        <include refid="FULL_COLUMN_LIST"/>
+        FROM emp_acc
+    </select>
 
     <insert id="createEmployee" parameterType="com.tca.emp.api.domain.po.CreateEmpPo">
         INSERT INTO emp_acc
@@ -44,18 +64,20 @@
         </trim>
     </insert>
 
-    <select id="findEmpByUsername" resultMap="BASE_RESULT_MAP" parameterType="java.lang.String">
-        SELECT
-        <include refid="BASE_COLUMN_LIST"/>
-        FROM emp_acc
-        WHERE
-        i_del = 0 AND
-        vc_emp_uname = #{name, jdbcType=VARCHAR}
-    </select>
-    <select id="findAll" resultMap="FULL_RESULT_MAP">
-        SELECT
-        <include refid="FULL_COLUMN_LIST"/>
-        FROM emp_acc
-    </select>
+    <update id="setTag">
+        UPDATE emp_acc
+        <set>
+            i_tag_id = #{tagId}
+        </set>
+        WHERE i_emp_id = #{empId}
+    </update>
+
+    <update id="setStatus">
+        UPDATE emp_acc
+        <set>
+            i_emp_status = #{status}
+        </set>
+        WHERE i_emp_id = #{empId}
+    </update>
 
 </mapper>

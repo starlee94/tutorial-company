@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum TagType implements DbTypeEnumIfc {
+    NOT_ASSIGN(0, "Unassigned"),
     CEO(1, "Chief Executive Officer"),
     HR(2, "Human Resource"),
     TL(3, "Tech Lead"),

@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface AuthMapper {
 
-    EmpAcc findByUsername(String userName);
+    EmpAcc findByUsername(@Param("username") String username);
 
     String verifyToken(@Param("token") String token);
 

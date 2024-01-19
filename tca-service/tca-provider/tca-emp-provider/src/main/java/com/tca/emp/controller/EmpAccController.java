@@ -4,7 +4,9 @@ import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebController;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.controller.BearerAuthController;
+import com.tca.emp.api.domain.req.SetTagRequest;
 import com.tca.emp.api.domain.req.CreateEmpRequest;
+import com.tca.emp.api.domain.req.SetStatusRequest;
 import com.tca.emp.api.domain.vo.EmployeeDetail;
 import com.tca.emp.api.domain.vo.FullEmployeeDetail;
 import com.tca.emp.service.EmpAccActionService;
@@ -47,4 +49,11 @@ public class EmpAccController extends AbstractWebController implements BearerAut
 
     @PostMapping("/create")
     public Response<Void> createEmployee(CreateEmpRequest createEmpRequest) throws Exception { return empAccActionService.createEmployee(createEmpRequest); }
+
+    @PutMapping("/set/tag")
+    public Response<Void> setTag(SetTagRequest setTagRequest) throws Exception { return empAccActionService.setTag(setTagRequest); }
+
+    @PutMapping("/set/status")
+    public Response<Void> setStatus(SetStatusRequest setStatusRequest) throws Exception { return empAccActionService.setStatus(setStatusRequest); }
+
 }
