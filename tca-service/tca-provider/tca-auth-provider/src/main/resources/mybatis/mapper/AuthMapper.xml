@@ -19,6 +19,7 @@
         <include refid="BASE_COLUMN_LIST"/>
         FROM emp_acc
         WHERE
+        i_del = 0 AND
         vc_emp_uname = #{username, jdbcType=VARCHAR}
     </select>
 
@@ -26,18 +27,21 @@
         SELECT vc_token
         FROM emp_acc
         WHERE
+        i_del = 0 AND
         vc_token = #{token, jdbcType=VARCHAR}
     </select>
 
     <update id="clearToken" parameterType="java.lang.Integer">
         UPDATE emp_acc
         SET vc_token = ""
-        WHERE i_emp_id = #{id, jdbcType=INTEGER}
+        WHERE i_del = 0 AND
+        i_emp_id = #{id, jdbcType=INTEGER}
     </update>
 
     <update id="updateToken">
         UPDATE emp_acc
         SET vc_token = #{token, jdbcType=VARCHAR}
-        WHERE i_emp_id = #{id, jdbcType=INTEGER}
+        WHERE i_del = 0 AND
+        i_emp_id = #{id, jdbcType=INTEGER}
     </update>
 </mapper>

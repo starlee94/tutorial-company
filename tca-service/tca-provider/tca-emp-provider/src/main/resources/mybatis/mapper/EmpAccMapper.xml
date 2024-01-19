@@ -49,6 +49,7 @@
         <include refid="BASE_COLUMN_LIST"/>
         FROM emp_acc
         WHERE
+        i_del = 0 AND
         vc_emp_uname = #{name, jdbcType=VARCHAR}
     </select>
     <select id="findAll" resultMap="FULL_RESULT_MAP">
