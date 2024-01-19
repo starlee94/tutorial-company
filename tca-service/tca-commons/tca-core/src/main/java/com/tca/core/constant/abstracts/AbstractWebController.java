@@ -72,7 +72,7 @@ public abstract class AbstractWebController extends BaseController {
             // 未知异常，返回一个通用的返回体信息，如 系统繁忙 等
 //            log.error("出现未知异常！:{}", exception.getStackTrace());
             log.error("Request 3:"+httpServletRequest.getRequestURI() + ", Unknown Error！", exception);
-            response = Response.genResp(GlobalSystemEnum.SYSTEM_ERROR);
+            response = Response.genFailResp();
         } finally {
             log.info("Response: {}", toJSONString(response));
             PageHelper.clearPage();

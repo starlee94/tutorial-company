@@ -10,7 +10,7 @@ import java.util.Collection;
  * @author star.lee
  */
 @Data
-public class AuthLoginRequest implements UserDetails {
+public class EmpLoginRequest implements UserDetails {
 
     private String username;
     private String password;

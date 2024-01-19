@@ -50,6 +50,9 @@ public class Response<T> implements Serializable {
                 .build();
     }
 
+    public static Response genSuccessResp(){ return genResp(GlobalSystemEnum.OK); }
+    public static Response genFailResp(){ return genResp(GlobalSystemEnum.SYSTEM_ERROR); }
+
     public static Response genResp(BaseEnumIfc baseEnumIfc){
 
         return Response.builder()

@@ -1,4 +1,4 @@
-package com.tca.emp.api.vo;
+package com.tca.emp.api.domain.vo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

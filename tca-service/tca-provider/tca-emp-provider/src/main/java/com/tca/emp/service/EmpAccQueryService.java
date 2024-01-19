@@ -4,8 +4,8 @@ import com.tca.core.Response;
 import com.tca.core.constant.enums.GlobalRequestEnum;
 import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.emp.abstracts.AbstractEmpService;
-import com.tca.emp.api.vo.EmployeeDetail;
-import com.tca.emp.api.vo.FullEmployeeDetail;
+import com.tca.emp.api.domain.vo.EmployeeDetail;
+import com.tca.emp.api.domain.vo.FullEmployeeDetail;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 

@@ -4,7 +4,7 @@ import com.tca.auth.api.feign.AuthService;
 import com.tca.core.DynamicDataSource;
 import com.tca.core.Response;
 import com.tca.core.constant.abstracts.AbstractWebService;
-import com.tca.emp.api.vo.EmployeeDetail;
+import com.tca.emp.api.domain.vo.EmployeeDetail;
 import com.tca.emp.mapper.EmpAccMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

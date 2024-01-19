@@ -1,7 +1,7 @@
-package com.tca.emp.api.vo;
+package com.tca.emp.api.domain.vo;
 
-import com.tca.emp.api.po.EmployeeStatus;
-import com.tca.emp.api.po.TagType;
+import com.tca.emp.api.constant.EmployeeStatus;
+import com.tca.emp.api.constant.TagType;
 import lombok.Data;
 
 @Data

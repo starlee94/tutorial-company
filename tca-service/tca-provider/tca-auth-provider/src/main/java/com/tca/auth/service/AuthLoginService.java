@@ -5,7 +5,6 @@ import com.tca.auth.abstracts.AbstractAuthService;
 import com.tca.auth.api.request.AuthLoginRequest;
 import com.tca.core.Response;
 import com.tca.core.constant.enums.GlobalRequestEnum;
-import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,7 +50,7 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
             return Response.genResp(respMsg, token);
         }
 
-        return Response.genResp(GlobalSystemEnum.SYSTEM_ERROR);
+        return Response.genFailResp();
     }
 
 

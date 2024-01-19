@@ -1,4 +1,4 @@
-package com.tca.emp.api.po;
+package com.tca.emp.api.constant;
 
 import com.tca.utils.constant.interfaces.DbTypeEnumIfc;
 import lombok.Getter;
@@ -6,10 +6,13 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum EmployeeStatus implements DbTypeEnumIfc {
-
-    DISABLED(0, "Account Disabled"),
-    ACTIVE(1, "Account Active")
+public enum TagType implements DbTypeEnumIfc {
+    CEO(1, "Chief Executive Officer"),
+    HR(2, "Human Resource"),
+    TL(3, "Tech Lead"),
+    SD(4, "Senior Developer"),
+    D(5, "Developer"),
+    JD(6, "Junior Developer")
     ;
 
     final Integer idx;
