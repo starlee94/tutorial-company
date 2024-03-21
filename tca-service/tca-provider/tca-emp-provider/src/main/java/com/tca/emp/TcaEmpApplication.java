@@ -1,7 +1,7 @@
 package com.tca.emp;
 
-import com.tca.core.config.ApplicationConfiguration;
-import com.tca.core.config.ResponseTraceIdConfiguration;
+import com.tca.utils.config.ApplicationConfiguration;
+import com.tca.utils.config.ResponseTraceIdConfiguration;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.info.Info;

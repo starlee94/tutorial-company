@@ -1,10 +1,9 @@
 package com.tca.auth.service;
 
 import com.tca.auth.abstracts.AbstractAuthService;
-import com.tca.core.Response;
-import com.tca.core.constant.enums.GlobalRequestEnum;
-import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
+import com.tca.utils.Response;
+import com.tca.utils.constant.enums.GlobalRequestEnum;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -23,6 +22,6 @@ public class AuthQueryService extends AbstractAuthService<String, EmpAcc> {
 
     @Override
     public Response<EmpAcc> process(String reqParameter) throws Exception {
-        return Response.genResp(GlobalSystemEnum.OK, authMapper.findByUsername(reqParameter));
+        return Response.genResp(authMapper.findByUsername(reqParameter));
     }
 }

@@ -3,9 +3,9 @@ package com.tca.auth.service;
 import com.google.gson.Gson;
 import com.tca.auth.abstracts.AbstractAuthService;
 import com.tca.auth.api.request.AuthLoginRequest;
-import com.tca.core.Response;
-import com.tca.core.constant.enums.GlobalRequestEnum;
 import com.tca.core.entity.EmpAcc;
+import com.tca.utils.Response;
+import com.tca.utils.constant.enums.GlobalRequestEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,11 +29,12 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
 
     @Override
     protected void validateParameter(AuthLoginRequest reqParameter) throws Exception {
-        if(ObjectUtils.isEmpty(reqParameter)){ ex(GlobalRequestEnum.PARAM_LOSS); }
+        if(ObjectUtils.isEmpty(reqParameter)) { ex(GlobalRequestEnum.PARAM_LOSS); }
     }
 
     @Override
-    public Response<Void> process(AuthLoginRequest reqParameter) throws Exception {
+    public Response<Void> process(AuthLoginRequest reqParameter){
+
         LOG.info("AuthLoginRequest param: {}", new Gson().toJson(reqParameter));
 
         authenticationManager.authenticate(
@@ -43,7 +44,7 @@ public class AuthLoginService extends AbstractAuthService<AuthLoginRequest, Void
         );
 
         EmpAcc empAcc = authMapper.findByUsername(reqParameter.getUsername());
-        if(!ObjectUtils.isEmpty(empAcc)){
+        if (!ObjectUtils.isEmpty(empAcc)) {
             String token = jwtService.generateToken(new HashMap<>(), reqParameter.getUsername());
             authMapper.updateToken(empAcc.getId(), token);
             respMsg = String.format("Employee %s logged in.", reqParameter.getUsername());

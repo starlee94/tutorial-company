@@ -9,4 +9,11 @@
   <artifactId>tca-auth-api</artifactId>
   <name>tca-auth-api</name>
 
+  <dependencies>
+    <dependency>
+      <groupId>com.tca</groupId>
+      <artifactId>tca-core</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 </project>

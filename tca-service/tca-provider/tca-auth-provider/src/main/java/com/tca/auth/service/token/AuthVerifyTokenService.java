@@ -1,10 +1,9 @@
 package com.tca.auth.service.token;
 
 import com.tca.auth.abstracts.AbstractAuthService;
-import com.tca.core.Response;
-import com.tca.core.constant.enums.GlobalRequestEnum;
-import com.tca.core.constant.enums.GlobalSystemEnum;
-import com.tca.core.exception.LogicException;
+import com.tca.utils.Response;
+import com.tca.utils.constant.enums.GlobalRequestEnum;
+import com.tca.utils.exception.LogicException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 
@@ -23,6 +22,6 @@ public class AuthVerifyTokenService extends AbstractAuthService<String, String> 
 
     @Override
     public Response<String> process(String reqParameter) throws Exception {
-        return Response.genResp(GlobalSystemEnum.OK, authMapper.verifyToken(reqParameter));
+        return Response.genResp(authMapper.verifyToken(reqParameter));
     }
 }

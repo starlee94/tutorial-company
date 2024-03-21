@@ -1,10 +1,10 @@
 package com.tca.auth.abstracts;
 
 import com.tca.auth.mapper.AuthMapper;
-import com.tca.core.DynamicDataSource;
-import com.tca.core.Response;
-import com.tca.core.constant.abstracts.AbstractWebService;
 import com.tca.core.service.JwtService;
+import com.tca.utils.DynamicDataSource;
+import com.tca.utils.Response;
+import com.tca.utils.constant.abstracts.AbstractWebService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**

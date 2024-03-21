@@ -22,9 +22,13 @@ public interface EmpAccMapper {
 
     List<FullEmployeeDetail> findAll();
 
-    Void createEmployee(CreateEmpPo createEmpPo);
+    void createEmployee(CreateEmpPo createEmpPo);
 
-    Void setTag(@Param("empId") Integer empId, @Param("tagId") TagType tagId, @Param("updateTime")Date updateTime);
+    void setTag(@Param("empId") Integer empId, @Param("tagId") TagType tagId, @Param("updateTime")Date updateTime);
 
-    Void setStatus(@Param("empId") Integer empId, @Param("status") EmployeeStatus status, @Param("updateTime")Date updateTime);
+    void setStatus(@Param("empId") Integer empId, @Param("status") EmployeeStatus status, @Param("updateTime")Date updateTime);
+
+    void setSecret(@Param("username") String username, @Param("secret") String secret);
+
+    Integer verifySecret(@Param("secret") String secret);
 }

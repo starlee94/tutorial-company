@@ -12,13 +12,15 @@ import java.util.Date;
 @Data
 public class CreateEmpPo extends CreateEmpRequest {
     private EmployeeStatus status;
+    private String secret;
     private Date createTime;
     private Date updateTime;
 
-    public static CreateEmpPo init(CreateEmpRequest createEmpRequest){
+    public static CreateEmpPo init(CreateEmpRequest createEmpRequest, String secret){
         CreateEmpPo createEmpPo = new CreateEmpPo();
         BeanUtils.copyProperties(createEmpRequest, createEmpPo);
-        createEmpPo.setStatus(EmployeeStatus.ACTIVE);
+        createEmpPo.setSecret(secret);
+        createEmpPo.setStatus(EmployeeStatus.NEW_EMPLOYEE);
         createEmpPo.setCreateTime(new Date());
         createEmpPo.setUpdateTime(new Date());
         return createEmpPo;

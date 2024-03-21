@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 public enum EmployeeStatus implements DbTypeEnumIfc {
 
     DISABLED(0, "Account Disabled"),
-    ACTIVE(1, "Account Active")
+    ACTIVE(1, "Account Active"),
+    NEW_EMPLOYEE(2, "New Account")
     ;
 
     final Integer idx;

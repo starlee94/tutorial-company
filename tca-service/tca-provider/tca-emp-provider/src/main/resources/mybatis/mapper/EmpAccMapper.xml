@@ -58,6 +58,7 @@
             #{username},
             #{firstName},
             #{lastName},
+            #{secret}
             #{status},
             #{createTime},
             #{updateTime}
@@ -82,4 +83,17 @@
         WHERE i_emp_id = #{empId}
     </update>
 
+    <update id="setSecret">
+        UPDATE emp_acc
+        <set>
+            vc_emp_pword = #{secret}
+        </set>
+        WHERE vc_emp_uname = #{username}
+    </update>
+
+    <select id="verifySecret" resultType="java.lang.Integer">
+        SELECT COUNT(*)
+        FROM emp_acc
+        WHERE vc_emp_pword = #{secret}
+    </select>
 </mapper>

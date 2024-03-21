@@ -9,5 +9,11 @@
     <artifactId>tca-auth-provider</artifactId>
     <name>tca-auth-provider</name>
     <packaging>jar</packaging>
-
+<dependencies>
+    <dependency>
+        <groupId>com.tca</groupId>
+        <artifactId>tca-core</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </dependency>
+</dependencies>
 </project>

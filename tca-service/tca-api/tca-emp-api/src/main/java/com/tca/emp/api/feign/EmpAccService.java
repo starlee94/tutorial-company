@@ -11,7 +11,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 @Headers({"Content-Type: application/json", "Accept: application/json"})
 public interface EmpAccService {
 
-//    @GetMapping("/emp/getUsername")
-//    Optional<EmpAcc> findByUsername(String username);
+//    @PutMapping("/emp/set/secret")
+//    void setSecret(@RequestBody SetSecretRequest setSecretRequest);
 
 }

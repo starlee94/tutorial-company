@@ -2,11 +2,11 @@ package com.tca.auth.service.token;
 
 import com.tca.auth.abstracts.AbstractAuthService;
 import com.tca.auth.service.AuthQueryService;
-import com.tca.core.Response;
-import com.tca.core.constant.enums.GlobalRequestEnum;
-import com.tca.core.constant.enums.GlobalSystemEnum;
 import com.tca.core.entity.EmpAcc;
-import com.tca.core.exception.LogicException;
+import com.tca.utils.Response;
+import com.tca.utils.constant.enums.GlobalRequestEnum;
+import com.tca.utils.constant.enums.GlobalSystemEnum;
+import com.tca.utils.exception.LogicException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

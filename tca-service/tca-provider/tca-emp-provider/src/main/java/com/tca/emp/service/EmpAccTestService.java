@@ -1,7 +1,7 @@
 package com.tca.emp.service;
 
-import com.tca.core.Response;
 import com.tca.emp.abstracts.AbstractEmpService;
+import com.tca.utils.Response;
 import org.springframework.stereotype.Service;
 
 /**
